@@ -316,6 +316,7 @@ async function colorMap() {
     const svgElement = svgDoc.querySelector('svg');
     svgElement.setAttribute('width', '100%');  // Pełna szerokość kontenera
     svgElement.setAttribute('height', 'auto'); // Automatyczna wysokość
+    svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
     const winners = getWinners();
     for (const [okreg, winner] of Object.entries(winners)) {
         const path = svgDoc.getElementById(`okreg_${okreg}`);
