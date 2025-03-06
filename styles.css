@@ -9,7 +9,7 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 20px;
-    max-width: 1600px;
+    max-width: 90vh;
     margin: 0 auto;
     max-height: 90vh;
     overflow: auto;
