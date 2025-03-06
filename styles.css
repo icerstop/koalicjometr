@@ -78,6 +78,7 @@ canvas {
 #map svg {
     width: 100%; /* SVG wypełnia kontener */
     height: auto; /* Zachowuje proporcje */
+    position: relative;
 }
 
 
