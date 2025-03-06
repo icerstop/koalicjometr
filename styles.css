@@ -81,6 +81,12 @@ canvas {
     position: relative;
 }
 
+.map-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centruje mapę w poziomie */
+}
+
 
 #constituency-list {
     width: 100%;
