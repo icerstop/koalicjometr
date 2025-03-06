@@ -46,9 +46,9 @@ class ElectionCalculator {
             (local, i) => (pastSupportProjection[i] !== 0 ? local / pastSupportProjection[i] : 0)
         );
         let localSupport = support.map((s, i) => s * localSupportDeviation[i]);
-        if (constituency.number === 21) {
-            localSupport.push(5.37); // MN w Opolu
-        }
+        //if (constituency.number === 21) {
+        //    localSupport.push(5.37); // MN w Opolu
+        //}
         if (constituency.number === 32) {
             const nlIndex = this.committees.findIndex(c => c.id === 'nl');
             const cap = 1.8 * support[nlIndex];
