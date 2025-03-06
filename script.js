@@ -156,26 +156,30 @@ let calculator;
 async function loadConstituencies() {
     const response = await fetch('data/wybory2023.csv');
     const text = await response.text();
-    console.log('Zawartość pliku CSV:', text); // Wyświetlamy surowy tekst
-    const rows = text.split('\n').slice(1);
-    console.log('Wiersze po podziale:', rows); // Wyświetlamy wiersze
-    constituencies = rows.map((row, index) => {
-        const parts = row.split(';');
-        console.log(`Wiersz ${index + 2}:`, parts); // Numer wiersza + 2, bo pomijamy nagłówek
-        if (parts.length !== 7) {
-            console.error(`Błąd w wierszu ${index + 2}: za mało kolumn (${parts.length} zamiast 7)`);
-            return null; // Pomijamy błędny wiersz
-        }
-        const [number, size, td, nl, pis, konf, ko] = parts;
-        const pastSupport = {
-            td: parseFloat(td.replace(',', '.')),
-            nl: parseFloat(nl.replace(',', '.')),
-            pis: parseFloat(pis.replace(',', '.')),
-            konf: parseFloat(konf.replace(',', '.')),
-            ko: parseFloat(ko.replace(',', '.'))
-        };
-        return new Constituency(parseInt(number), parseInt(size), pastSupport);
-    }).filter(c => c !== null); // Usuwamy pominięte wiersze
+    const rows = text.trim().split('\n').slice(1); // Usuwamy białe znaki i pomijamy nagłówek
+    constituencies = rows
+        .filter(row => row.trim() !== '') // Pomijamy puste linie
+        .map((row, index) => {
+            const parts = row.split(';');
+            if (parts.length !== 7) {
+                console.error(`Błąd w wierszu ${index + 2}: za mało kolumn (${parts.length} zamiast 7)`);
+                return null;
+            }
+            const [number, size, td, nl, pis, konf, ko] = parts;
+            const pastSupport = {
+                td: parseFloat(td.replace(',', '.')),
+                nl: parseFloat(nl.replace(',', '.')),
+                pis: parseFloat(pis.replace(',', '.')),
+                konf: parseFloat(konf.replace(',', '.')),
+                ko: parseFloat(ko.replace(',', '.'))
+            };
+            return new Constituency(parseInt(number), parseInt(size), pastSupport);
+        })
+        .filter(c => c !== null); // Usuwamy błędne wiersze
+    if (constituencies.length === 0) {
+        console.error('Nie udało się załadować żadnych danych z pliku CSV.');
+        return;
+    }
     calculator = new ElectionCalculator(committees, constituencies);
     populateConstituencyList();
     calculateMandates();
