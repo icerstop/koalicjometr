@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Kalkulator mandatów</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Dodajemy bibliotekę Chart.js do wykresów -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Sekcja suwaków -->
+        <div class="sliders-section">
+            <h2>Ustaw poparcie (%)</h2>
+            <div id="sliders">
+                <!-- Suwaki dla partii -->
+                <div class="slider-row">
+                    <label for="td-slider">Trzecia Droga (%):</label>
+                    <input type="range" id="td-slider" min="0" max="1000" value="200">
+                    <input type="text" id="td-entry" value="20.0">
+                    <select id="td-threshold">
+                        <option value="5">5%</option>
+                        <option value="8">8%</option>
+                    </select>
+                </div>
+                <div class="slider-row">
+                    <label for="nl-slider">Lewica (%):</label>
+                    <input type="range" id="nl-slider" min="0" max="1000" value="200">
+                    <input type="text" id="nl-entry" value="20.0">
+                    <select id="nl-threshold">
+                        <option value="5">5%</option>
+                        <option value="8">8%</option>
+                    </select>
+                </div>
+                <div class="slider-row">
+                    <label for="pis-slider">Prawo i Sprawiedliwość (%):</label>
+                    <input type="range" id="pis-slider" min="0" max="1000" value="200">
+                    <input type="text" id="pis-entry" value="20.0">
+                    <select id="pis-threshold">
+                        <option value="5">5%</option>
+                        <option value="8">8%</option>
+                    </select>
+                </div>
+                <div class="slider-row">
+                    <label for="konf-slider">Konfederacja (%):</label>
+                    <input type="range" id="konf-slider" min="0" max="1000" value="200">
+                    <input type="text" id="konf-entry" value="20.0">
+                    <select id="konf-threshold">
+                        <option value="5">5%</option>
+                        <option value="8">8%</option>
+                    </select>
+                </div>
+                <div class="slider-row">
+                    <label for="ko-slider">Koalicja Obywatelska (%):</label>
+                    <input type="range" id="ko-slider" min="0" max="1000" value="200">
+                    <input type="text" id="ko-entry" value="20.0">
+                    <select id="ko-threshold">
+                        <option value="5">5%</option>
+                        <option value="8">8%</option>
+                    </select>
+                </div>
+                <!-- Wybór metody -->
+                <div class="slider-row">
+                    <label for="method-combo">Metoda obliczania mandatów:</label>
+                    <select id="method-combo">
+                        <option value="dHondt">dHondt</option>
+                        <option value="SainteLague">SainteLague</option>
+                        <option value="HareNiemeyer">HareNiemeyer</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wykres donut -->
+        <div class="chart-section">
+            <h2>Podział mandatów</h2>
+            <canvas id="donut-chart"></canvas>
+        </div>
+
+        <!-- Wykres słupkowy -->
+        <div class="chart-section">
+            <h2>Poparcie krajowe</h2>
+            <canvas id="bar-chart"></canvas>
+        </div>
+
+        <!-- Mapa -->
+        <div class="map-section">
+            <h2>Mapa okręgów</h2>
+            <div id="map"></div>
+        </div>
+
+        <!-- Szczegóły okręgów -->
+        <div class="details-section">
+            <h2>Szczegóły okręgów</h2>
+            <select id="constituency-list" size="5"></select>
+            <canvas id="constituency-chart"></canvas>
+        </div>
+
+        <!-- Koalicje -->
+        <div class="coalitions-section">
+            <h2>Potencjalne koalicje</h2>
+            <textarea id="coalitions-text" readonly></textarea>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
