@@ -72,7 +72,12 @@ canvas {
 
 #map {
     width: 300px;
-    height: 300px;
+    height: auto;
+}
+
+#map svg {
+    width: 100%; /* SVG wypełnia kontener */
+    height: auto; /* Zachowuje proporcje */
 }
 
 
