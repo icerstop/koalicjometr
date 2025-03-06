@@ -99,7 +99,7 @@ canvas {
 }
 
 #map {
-    width: 30%; /* Procent szerokości kontenera */
+    width: 50%; /* Procent szerokości kontenera */
     height: auto;
 }
 
