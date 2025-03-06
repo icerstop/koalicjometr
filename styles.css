@@ -11,7 +11,7 @@ body {
     gap: 20px;
     max-width: 1600px;
     margin: 0 auto;
-    max-height: 800px;
+    max-height: 90vh;
     overflow: auto;
 }
 
@@ -95,11 +95,6 @@ canvas {
 #constituency-list {
     width: 100%;
     margin-bottom: 10px;
-}
-
-.container {
-    max-height: 90vh; /* 90% wysokości widoku okna */
-    overflow: auto;
 }
 
 #map {
