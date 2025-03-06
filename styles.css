@@ -7,13 +7,13 @@ body {
 
 .container {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr; /* Trzy kolumny */
     gap: 20px;
-    max-width: 90vh;
+    max-width: 90vw; /* 90% szerokości okna */
     margin: 0 auto;
-    max-height: 90vh;
+    max-height: 90vh; /* 90% wysokości okna */
+    overflow: auto; /* Przewijanie w razie potrzeby */
     padding: 10px;
-    overflow: auto;
 }
 
 .sliders-section, .chart-section, .map-section, .details-section, .coalitions-section {
@@ -21,8 +21,8 @@ body {
     padding: 15px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    overflow-y: auto;
-    max-height: 100%;
+    overflow-y: auto; /* Przewijanie w każdej sekcji, jeśli za dużo treści */
+    max-height: 100%; /* Sekcje dostosowują się do wysokości kolumny */
 }
 
 h2 {
@@ -76,41 +76,76 @@ canvas {
 }
 
 #map {
-    width: 500px;
+    width: 250px; /* Zmniejszona szerokość mapy */
     height: auto;
+    overflow: visible;
 }
 
 #map svg {
-    width: 100%; /* SVG wypełnia kontener */
-    height: auto; /* Zachowuje proporcje */
-    position: relative;
-}
-
-.map-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centruje mapę w poziomie */
-}
-
-
-#constituency-list {
     width: 100%;
-    margin-bottom: 10px;
-}
-
-#map {
-    width: 50%; /* Procent szerokości kontenera */
     height: auto;
 }
 
 .chart-section canvas {
-    max-height: 25vh; /* 25% wysokości widoku */
+    max-width: 100%;
+    max-height: 100%; /* Wykres dostosuje się do sekcji */
 }
 
-.details-section select, .details-section canvas {
-    max-height: 20vh; /* 20% wysokości widoku */
+/* Dostosowanie wysokości sekcji w środkowej i prawej kolumnie */
+.chart-section:nth-child(2) { /* Wykres donut */
+    max-height: 45vh; /* Połowa wysokości kolumny dla donut */
+}
+
+.map-section { /* Mapa */
+    max-height: 45vh; /* Połowa wysokości kolumny dla mapy */
+}
+
+.chart-section:nth-child(3) { /* Wykres słupkowy */
+    max-height: 30vh; /* Trzecia część prawej kolumny */
+}
+
+.details-section {
+    max-height: 30vh; /* Trzecia część prawej kolumny */
+    overflow-y: auto;
+}
+
+.details-section select {
+    width: 100%;
+    margin-bottom: 10px;
+    max-height: 50%; /* Połowa sekcji na listę */
+}
+
+.details-section canvas {
+    max-height: 50%; /* Połowa sekcji na wykres */
+}
+
+.coalitions-section {
+    max-height: 30vh; /* Trzecia część prawej kolumny */
+    overflow-y: auto;
 }
 
 #coalitions-text {
-    height: 20vh;
+    width: 100%;
+    height: 100%; /* Wypełnia sekcję */
+    resize: none;
+}
+
+/* Ograniczenie maksymalnej szerokości na dużych ekranach */
+@media (min-width: 1600px) {
+    .container {
+        max-width: 1600px; /* Górny limit na szerokich ekranach */
+    }
+}
+
+/* Responsywność dla małych ekranów */
+@media (max-width: 600px) {
+    .container {
+        grid-template-columns: 1fr; /* Jedna kolumna na telefonach */
+    }
+    .sliders-section, .chart-section, .map-section, .details-section, .coalitions-section {
+        max-height: 40vh; /* Dostosowanie wysokości na telefonach */
+    }
+    #map {
+        width: 100%; /* Mapa wypełnia kolumnę na telefonach */
+    }
 }
