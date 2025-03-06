@@ -63,7 +63,7 @@ class ElectionCalculator {
             const localSupport = this.calculateLocalSupport(support, constituency);
             constituency.support = localSupport;
             constituency.mandates = new Array(this.committees.length).fill(0);
-            const filteredLocalSupport = localSupport.map(
+            const filteredLocalSupport = localSupport.slice(0, this.committees.length).map(
                 (s, i) => (support[i] < this.committees[i].threshold ? 0 : s)
             );
 
