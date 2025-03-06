@@ -156,23 +156,26 @@ let calculator;
 async function loadConstituencies() {
     const response = await fetch('data/wybory2023.csv');
     const text = await response.text();
+    console.log('Zawartość pliku CSV:', text); // Wyświetlamy surowy tekst
     const rows = text.split('\n').slice(1);
-    constituencies = rows.map(row => {
-    const parts = row.split(';');
-    if (parts.length !== 7) {
-        console.error(`Niepoprawny wiersz w CSV: ${row}`);
-        return null; // Pomijamy błędny wiersz
-    }
-    const [number, size, td, nl, pis, konf, ko] = parts;
-    const pastSupport = {
-        td: parseFloat(td.replace(',', '.')),
-        nl: parseFloat(nl.replace(',', '.')),
-        pis: parseFloat(pis.replace(',', '.')),
-        konf: parseFloat(konf.replace(',', '.')),
-        ko: parseFloat(ko.replace(',', '.'))
-    };
-    return new Constituency(parseInt(number), parseInt(size), pastSupport);
-}).filter(c => c !== null); // Usuwamy pominięte wiersze
+    console.log('Wiersze po podziale:', rows); // Wyświetlamy wiersze
+    constituencies = rows.map((row, index) => {
+        const parts = row.split(';');
+        console.log(`Wiersz ${index + 2}:`, parts); // Numer wiersza + 2, bo pomijamy nagłówek
+        if (parts.length !== 7) {
+            console.error(`Błąd w wierszu ${index + 2}: za mało kolumn (${parts.length} zamiast 7)`);
+            return null; // Pomijamy błędny wiersz
+        }
+        const [number, size, td, nl, pis, konf, ko] = parts;
+        const pastSupport = {
+            td: parseFloat(td.replace(',', '.')),
+            nl: parseFloat(nl.replace(',', '.')),
+            pis: parseFloat(pis.replace(',', '.')),
+            konf: parseFloat(konf.replace(',', '.')),
+            ko: parseFloat(ko.replace(',', '.'))
+        };
+        return new Constituency(parseInt(number), parseInt(size), pastSupport);
+    }).filter(c => c !== null); // Usuwamy pominięte wiersze
     calculator = new ElectionCalculator(committees, constituencies);
     populateConstituencyList();
     calculateMandates();
