@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.sliders-section, .chart-section, .map-section, .details-section, .coalitions-section {
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+h2 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.slider-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.slider-row label {
+    width: 150px;
+    flex-shrink: 0;
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    margin-right: 10px;
+}
+
+input[type="text"] {
+    width: 50px;
+    margin-right: 10px;
+    padding: 2px;
+}
+
+select {
+    padding: 2px;
+}
+
+/* Kolory suwaków dla partii */
+#td-slider { background: #FFFF00; }
+#td-slider::-webkit-slider-thumb { background: #FFFF00; }
+#nl-slider { background: #FF0000; }
+#nl-slider::-webkit-slider-thumb { background: #FF0000; }
+#pis-slider { background: #000080; }
+#pis-slider::-webkit-slider-thumb { background: #000080; }
+#konf-slider { background: #8B4513; }
+#konf-slider::-webkit-slider-thumb { background: #8B4513; }
+#ko-slider { background: #FFA500; }
+#ko-slider::-webkit-slider-thumb { background: #FFA500; }
+
+canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+#map {
+    width: 400px;
+    height: 400px;
+}
+
+#constituency-list {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#coalitions-text {
+    width: 100%;
+    height: 200px;
+    resize: none;
+}
