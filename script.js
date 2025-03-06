@@ -158,16 +158,21 @@ async function loadConstituencies() {
     const text = await response.text();
     const rows = text.split('\n').slice(1);
     constituencies = rows.map(row => {
-        const [number, size, td, nl, pis, konf, ko] = row.split(';');
-        const pastSupport = {
-            td: parseFloat(td.replace(',', '.')),
-            nl: parseFloat(nl.replace(',', '.')),
-            pis: parseFloat(pis.replace(',', '.')),
-            konf: parseFloat(konf.replace(',', '.')),
-            ko: parseFloat(ko.replace(',', '.'))
-        };
-        return new Constituency(parseInt(number), parseInt(size), pastSupport);
-    });
+    const parts = row.split(';');
+    if (parts.length !== 7) {
+        console.error(`Niepoprawny wiersz w CSV: ${row}`);
+        return null; // Pomijamy błędny wiersz
+    }
+    const [number, size, td, nl, pis, konf, ko] = parts;
+    const pastSupport = {
+        td: parseFloat(td.replace(',', '.')),
+        nl: parseFloat(nl.replace(',', '.')),
+        pis: parseFloat(pis.replace(',', '.')),
+        konf: parseFloat(konf.replace(',', '.')),
+        ko: parseFloat(ko.replace(',', '.'))
+    };
+    return new Constituency(parseInt(number), parseInt(size), pastSupport);
+}).filter(c => c !== null); // Usuwamy pominięte wiersze
     calculator = new ElectionCalculator(committees, constituencies);
     populateConstituencyList();
     calculateMandates();
