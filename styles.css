@@ -1,151 +1,93 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 20px;
+    padding: 10px;
     background-color: #f0f0f0;
+    overflow: hidden; /* Wyłącz przewijanie całej strony */
 }
 
 .container {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr; /* Trzy kolumny */
-    gap: 20px;
-    max-width: 90vw; /* 90% szerokości okna */
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto 1fr 1fr; /* pierwszy wiersz dynamiczny, kolejne po równo */
+    gap: 15px;
+    width: 98vw; 
+    height: 96vh; /* trochę mniej niż cały viewport */
     margin: 0 auto;
-    max-height: 90vh; /* 90% wysokości okna */
-    overflow: auto; /* Przewijanie w razie potrzeby */
-    padding: 10px;
 }
 
-.sliders-section, .chart-section, .map-section, .details-section, .coalitions-section {
+.sliders-section,
+.chart-section,
+.map-section,
+.details-section,
+.coalitions-section {
     background-color: white;
-    padding: 15px;
+    padding: 10px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    overflow-y: auto; /* Przewijanie w każdej sekcji, jeśli za dużo treści */
-    max-height: 100%; /* Sekcje dostosowują się do wysokości kolumny */
-}
-
-h2 {
-    margin-top: 0;
-    font-size: 18px;
-}
-
-.slider-row {
+    overflow: hidden; /* Bez przewijania wewnętrznego */
     display: flex;
-    align-items: center;
-    margin-bottom: 10px;
+    flex-direction: column;
 }
 
-.slider-row label {
-    width: 150px;
-    flex-shrink: 0;
+.sliders-section {
+    grid-column: span 1;
+    grid-row: span 3; /* Zajmuje wszystkie 3 rzędy */
+    overflow-y: auto; /* Jeśli suwaków jest dużo */
 }
 
-input[type="range"] {
-    width: 100%;
-    height: 6px;
-    border-radius: 3px;
-    margin-right: 10px;
-}
-
-input[type="text"] {
-    width: 50px;
-    margin-right: 10px;
-    padding: 2px;
-}
-
-select {
-    padding: 2px;
-}
-
-/* Kolory suwaków dla partii */
-#td-slider { background: #FFFF00; }
-#td-slider::-webkit-slider-thumb { background: #FFFF00; }
-#nl-slider { background: #FF0000; }
-#nl-slider::-webkit-slider-thumb { background: #FF0000; }
-#pis-slider { background: #000080; }
-#pis-slider::-webkit-slider-thumb { background: #000080; }
-#konf-slider { background: #8B4513; }
-#konf-slider::-webkit-slider-thumb { background: #8B4513; }
-#ko-slider { background: #FFA500; }
-#ko-slider::-webkit-slider-thumb { background: #FFA500; }
-
-canvas {
-    max-width: 100%;
-    height: auto;
-}
-
-#map {
-    width: 350px; /* Zwiększamy szerokość mapy z 250px na 350px */
-    height: auto;
-    overflow: visible;
-}
-
-#map svg {
-    width: 100%;
-    height: auto;
-}
-
-.chart-section canvas {
-    max-width: 100%;
-    max-height: 100%; /* Wykres dostosuje się do sekcji */
-}
-
-/* Dostosowanie wysokości sekcji w środkowej i prawej kolumnie */
-.chart-section:nth-child(2) { /* Wykres donut */
-    max-height: 45vh; /* Połowa wysokości kolumny dla donut */
+.chart-section:nth-child(2) { /* Donut */
+    grid-column: 2;
+    grid-row: 1;
 }
 
 .map-section { /* Mapa */
-    max-height: 45vh; /* Połowa wysokości kolumny dla mapy */
+    grid-column: 2;
+    grid-row: 2;
 }
 
 .chart-section:nth-child(4) { /* Wykres słupkowy */
-    max-height: 25vh; /* Zmniejszamy z 30vh na 25vh, aby dać więcej miejsca koalicjom */
+    grid-column: 2;
+    grid-row: 3;
 }
 
-.details-section {
-    max-height: 25vh; /* Zmniejszamy z 30vh na 25vh */
-    overflow-y: auto;
+.details-section { /* Szczegóły */
+    grid-column: 3;
+    grid-row: 1;
 }
 
-.details-section select {
+.coalitions-section { /* Koalicje */
+    grid-column: 3;
+    grid-row: 2 / span 2; /* Zajmuje dolne dwa rzędy */
+}
+
+canvas, #map, svg {
+    flex: 1; /* Wypełniają dostępną przestrzeń */
     width: 100%;
-    margin-bottom: 10px;
-    max-height: 50%; /* Połowa sekcji na listę */
-}
-
-.details-section canvas {
-    max-height: 50%; /* Połowa sekcji na wykres */
-}
-
-.coalitions-section {
-    max-height: 40vh; /* Zwiększamy z 30vh na 40vh, aby pole tekstowe było większe */
-    overflow-y: auto;
+    height: 100%;
 }
 
 #coalitions-text {
+    flex: 1;
     width: 100%;
-    height: 100%; /* Wypełnia sekcję */
     resize: none;
+    border: none;
+    outline: none;
 }
 
-/* Ograniczenie maksymalnej szerokości na dużych ekranach */
-@media (min-width: 1600px) {
+/* Responsywność dla telefonów */
+@media (max-width: 900px) {
     .container {
-        max-width: 1600px; /* Górny limit na szerokich ekranach */
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(6, auto);
+        height: auto;
+        overflow-y: auto; /* na telefonach pozwól przewijać cały kontener */
     }
-}
-
-/* Responsywność dla małych ekranów */
-@media (max-width: 600px) {
-    .container {
-        grid-template-columns: 1fr; /* Jedna kolumna na telefonach */
-    }
-    .sliders-section, .chart-section, .map-section, .details-section, .coalitions-section {
-        max-height: 40vh; /* Dostosowanie wysokości na telefonach */
-    }
-    #map {
-        width: 100%; /* Mapa wypełnia kolumnę na telefonach */
+    .sliders-section,
+    .chart-section,
+    .map-section,
+    .details-section,
+    .coalitions-section {
+        max-height: none;
     }
 }
