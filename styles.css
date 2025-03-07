@@ -76,7 +76,7 @@ canvas {
 }
 
 #map {
-    width: 350px; /* Zwiększamy szerokość mapy z 250px na 350px */
+    width: 250px; /* Zmniejszona szerokość mapy */
     height: auto;
     overflow: visible;
 }
@@ -100,12 +100,12 @@ canvas {
     max-height: 45vh; /* Połowa wysokości kolumny dla mapy */
 }
 
-.chart-section:nth-child(4) { /* Wykres słupkowy */
-    max-height: 25vh; /* Zmniejszamy z 30vh na 25vh, aby dać więcej miejsca koalicjom */
+.chart-section:nth-child(3) { /* Wykres słupkowy */
+    max-height: 30vh; /* Trzecia część prawej kolumny */
 }
 
 .details-section {
-    max-height: 25vh; /* Zmniejszamy z 30vh na 25vh */
+    max-height: 30vh; /* Trzecia część prawej kolumny */
     overflow-y: auto;
 }
 
@@ -120,7 +120,7 @@ canvas {
 }
 
 .coalitions-section {
-    max-height: 40vh; /* Zwiększamy z 30vh na 40vh, aby pole tekstowe było większe */
+    max-height: 30vh; /* Trzecia część prawej kolumny */
     overflow-y: auto;
 }
 
