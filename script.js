@@ -238,7 +238,7 @@ async function updatePartyMap() {
         // Oblicz współczynnik intensywności: 0 dla najniższego poparcia, 1 dla najwyższego
         const factor = (supportValue - minSupport) / range;
         // Jeśli poparcie jest na poziomie minimum, odcień będzie bardziej rozjaśniony (np. rozjaśnienie o 50%), a przy maksymalnym – brak rozjaśnienia
-        const adjustment = 100 * (1 - factor);
+        const adjustment = 75 * (1 - factor);
         const newColor = shadeColor(baseColor, adjustment);
         
             // W funkcji updatePartyMap, zamiast dodawać <title>, dodaj eventy:
