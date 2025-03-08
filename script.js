@@ -449,7 +449,8 @@ function updateDonutChart(mandates) {
         plugins: {
             legend: {
                 position: 'bottom'
-            }
+            },
+            majorityLinePlugin: {}
         },
         cutout: '60%',         // Creates the donut hole
         circumference: 180,    // Half circle (180 degrees)
@@ -581,6 +582,68 @@ function getCombinations(arr, r) {
     });
     return result;
 }
+
+const majorityThreshold = 231;
+
+const majorityLinePlugin = {
+  id: 'majorityLinePlugin',
+  afterDraw: (chart) => {
+    const ctx = chart.ctx;
+    
+    // Suma wszystkich mandatów
+    const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+    if (total === 0) return;
+
+    // Ułamek odpowiadający 231 mandatom
+    // (opcjonalnie można go 'clampować', np. Math.min(231 / total, 1))
+    const fraction = majorityThreshold / total;
+
+    // Metadane pierwszego (i właściwie jedynego) datasetu
+    const meta = chart.getDatasetMeta(0);
+    if (!meta || !meta.data || !meta.data.length) return;
+
+    // Bierzemy pierwszy "arc" (ale w zasadzie każdy ma to samo .x, .y, .outerRadius itd.)
+    const arc = meta.data[0];
+
+    const centerX = arc.x;
+    const centerY = arc.y;
+    const outerRadius = arc.outerRadius;
+    const innerRadius = arc.innerRadius;
+
+    // Startowy kąt w radianach (domyślnie Chart.js liczy 0° przy 3-godz., rośnie w prawo)
+    const startAngle = (chart.options.rotation || 0) * (Math.PI / 180);
+
+    // Łączna „długość” w radianach (u Ciebie 180°, czyli Math.PI)
+    const totalCircumference = (chart.options.circumference || 360) * (Math.PI / 180);
+
+    // Kąt, gdzie chcemy narysować linię
+    // UWAGA: jeśli okaże się, że kreska ląduje po złej stronie,
+    // spróbuj odwrócić znak: startAngle - fraction * totalCircumference
+    const offsetDeg = 270; 
+    const offset = offsetDeg * (Math.PI / 180);
+
+    const angle = startAngle + fraction * totalCircumference + offset;
+
+    // Obliczamy dwa punkty: na wewnętrznym i zewnętrznym promieniu
+    const x1 = centerX + innerRadius * Math.cos(angle);
+    const y1 = centerY + innerRadius * Math.sin(angle);
+    const x2 = centerX + outerRadius * Math.cos(angle);
+    const y2 = centerY + outerRadius * Math.sin(angle);
+
+    // Rysujemy linię
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'black'; // ewentualnie zmień na inny kolor
+    ctx.stroke();
+    ctx.restore();
+  }
+};
+
+// Rejestracja pluginu
+Chart.register(majorityLinePlugin);
 
 // Start
 loadConstituencies();
