@@ -5,26 +5,50 @@ body {
     background-color: #f0f0f0;
 }
 
+/* Główny kontener – wyświetla kolejne rzędy pionowo */
 .container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr; /* Trzy kolumny */
+    display: flex;
+    flex-direction: column;
     gap: 20px;
-    max-width: 90vw; /* 90% szerokości okna */
+    max-width: 1600px;
     margin: 0 auto;
-    max-height: 90vh; /* 90% wysokości okna */
-    overflow: auto; /* Przewijanie w razie potrzeby */
     padding: 10px;
 }
 
-.sliders-section, .chart-section, .map-section, .details-section, .coalitions-section {
+/* Wspólne style dla sekcji */
+.sliders-section, .chart-section, .map-section, .details-section, .coalitions-section, .party-section {
     background-color: white;
     padding: 15px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    overflow-y: auto; /* Przewijanie w każdej sekcji, jeśli za dużo treści */
-    max-height: 100%; /* Sekcje dostosowują się do wysokości kolumny */
 }
 
+/* Style dla poszczególnych rzędów */
+.row {
+    display: grid;
+    gap: 20px;
+}
+
+/* Rząd 1: trzy kolumny */
+#row1 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* Rząd 2: dwie kolumny */
+#row2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* Rząd 3: jeden element na pełną szerokość */
+#row3 {
+    grid-template-columns: 1fr;
+}
+
+#row4 {
+    grid-template-columns: 1fr;
+}
+
+/* Reszta oryginalnych stylów – suwaki, wykresy, mapa itd. */
 h2 {
     margin-top: 0;
     font-size: 18px;
@@ -58,7 +82,44 @@ select {
     padding: 2px;
 }
 
-/* Kolory suwaków dla partii */
+canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Dostosowanie mapy */
+#map {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+#map svg {
+    width: 100%;
+    height: auto;
+}
+
+#party-map {
+    max-width: 600px;  /* Dopasuj do własnych potrzeb */
+    margin: 0 auto;    /* Wycentruj mapę w poziomie */
+    overflow: hidden;  /* Ukryj ewentualne wystające fragmenty */
+}
+
+/* Samo SVG dopasuje się do kontenera */
+#party-map svg {
+    width: 100%;
+    height: auto;
+    /* Jeżeli chcesz ograniczyć również wysokość, możesz dodać: */
+    /* max-height: 500px; */
+}
+
+#constituency-chart {
+    width: 100%;       /* dopasowanie do szerokości kontenera */
+    max-height: 300px; /* zmień wartość na taką, by cały wykres był widoczny */
+    height: auto;
+}
+
+/* Kolory suwaków dla partii – pozostają bez zmian */
 #td-slider { background: #FFFF00; }
 #td-slider::-webkit-slider-thumb { background: #FFFF00; }
 #nl-slider { background: #FF0000; }
@@ -69,83 +130,13 @@ select {
 #konf-slider::-webkit-slider-thumb { background: #8B4513; }
 #ko-slider { background: #FFA500; }
 #ko-slider::-webkit-slider-thumb { background: #FFA500; }
-
-canvas {
-    max-width: 100%;
-    height: auto;
-}
-
-#map {
-    width: 250px; /* Zmniejszona szerokość mapy */
-    height: auto;
-    overflow: visible;
-}
-
-#map svg {
-    width: 100%;
-    height: auto;
-}
-
-.chart-section canvas {
-    max-width: 100%;
-    max-height: 100%; /* Wykres dostosuje się do sekcji */
-}
-
-/* Dostosowanie wysokości sekcji w środkowej i prawej kolumnie */
-.chart-section:nth-child(2) { /* Wykres donut */
-    max-height: 45vh; /* Połowa wysokości kolumny dla donut */
-}
-
-.map-section { /* Mapa */
-    max-height: 45vh; /* Połowa wysokości kolumny dla mapy */
-}
-
-.chart-section:nth-child(3) { /* Wykres słupkowy */
-    max-height: 30vh; /* Trzecia część prawej kolumny */
-}
-
-.details-section {
-    max-height: 30vh; /* Trzecia część prawej kolumny */
-    overflow-y: auto;
-}
-
-.details-section select {
-    width: 100%;
-    margin-bottom: 10px;
-    max-height: 50%; /* Połowa sekcji na listę */
-}
-
-.details-section canvas {
-    max-height: 50%; /* Połowa sekcji na wykres */
-}
-
-.coalitions-section {
-    max-height: 30vh; /* Trzecia część prawej kolumny */
-    overflow-y: auto;
-}
-
-#coalitions-text {
-    width: 100%;
-    height: 100%; /* Wypełnia sekcję */
-    resize: none;
-}
-
-/* Ograniczenie maksymalnej szerokości na dużych ekranach */
-@media (min-width: 1600px) {
-    .container {
-        max-width: 1600px; /* Górny limit na szerokich ekranach */
-    }
-}
+#rz-slider { background: #a10249; }
+#rz-slider::-webkit-slider-thumb { background: #a10249; }
 
 /* Responsywność dla małych ekranów */
 @media (max-width: 600px) {
-    .container {
-        grid-template-columns: 1fr; /* Jedna kolumna na telefonach */
-    }
-    .sliders-section, .chart-section, .map-section, .details-section, .coalitions-section {
-        max-height: 40vh; /* Dostosowanie wysokości na telefonach */
-    }
-    #map {
-        width: 100%; /* Mapa wypełnia kolumnę na telefonach */
+    /* Na telefonach każdy rząd wyświetlamy jako jedna kolumna */
+    #row1, #row2, #row3 {
+        grid-template-columns: 1fr;
     }
 }

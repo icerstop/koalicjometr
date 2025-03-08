@@ -9,99 +9,127 @@
 </head>
 <body>
     <div class="container">
-        <!-- Sekcja suwaków -->
-        <div class="sliders-section">
-            <h2>Ustaw poparcie (%)</h2>
-            <div id="sliders">
-                <!-- Suwaki dla partii -->
-                <div class="slider-row">
-                    <label for="td-slider">Trzecia Droga (%):</label>
-                    <input type="range" id="td-slider" min="0" max="1000" value="200">
-                    <input type="text" id="td-entry" value="20.0">
-                    <select id="td-threshold">
-                        <option value="5">5%</option>
-                        <option value="8">8%</option>
-                    </select>
+        <!-- Rząd 1: suwaki, wykres mandatów i mapa -->
+        <div class="row" id="row1">
+            <div class="sliders-section">
+                <h2>Ustaw poparcie (%)</h2>
+                <div id="sliders">
+                    <!-- Suwaki dla partii -->
+                    <div class="slider-row">
+                        <label for="td-slider">Trzecia Droga (%):</label>
+                        <input type="range" id="td-slider" min="0" max="1000" value="80">
+                        <input type="text" id="td-entry" value="8.0">
+                        <select id="td-threshold">
+                            <option value="5">5%</option>
+                            <option value="8">8%</option>
+                        </select>
+                    </div>
+                    <!-- Pozostałe suwaki analogicznie -->
+                    <div class="slider-row">
+                        <label for="nl-slider">Lewica (%):</label>
+                        <input type="range" id="nl-slider" min="0" max="1000" value="70">
+                        <input type="text" id="nl-entry" value="7.0">
+                        <select id="nl-threshold">
+                            <option value="5">5%</option>
+                            <option value="8">8%</option>
+                        </select>
+                    </div>
+                    <div class="slider-row">
+                        <label for="pis-slider">Prawo i Sprawiedliwość (%):</label>
+                        <input type="range" id="pis-slider" min="0" max="1000" value="300">
+                        <input type="text" id="pis-entry" value="30.0">
+                        <select id="pis-threshold">
+                            <option value="5">5%</option>
+                            <option value="8">8%</option>
+                        </select>
+                    </div>
+                    <div class="slider-row">
+                        <label for="konf-slider">Konfederacja (%):</label>
+                        <input type="range" id="konf-slider" min="0" max="1000" value="150">
+                        <input type="text" id="konf-entry" value="15.0">
+                        <select id="konf-threshold">
+                            <option value="5">5%</option>
+                            <option value="8">8%</option>
+                        </select>
+                    </div>
+                    <div class="slider-row">
+                        <label for="ko-slider">Koalicja Obywatelska (%):</label>
+                        <input type="range" id="ko-slider" min="0" max="1000" value="300">
+                        <input type="text" id="ko-entry" value="30.0">
+                        <select id="ko-threshold">
+                            <option value="5">5%</option>
+                            <option value="8">8%</option>
+                        </select>
+                    </div>
+                    <div class="slider-row">
+                        <label for="rz-slider">Razem (%):</label>
+                        <input type="range" id="rz-slider" min="0" max="1000" value="20">
+                        <input type="text" id="rz-entry" value="2.0">
+                        <select id="rz-threshold">
+                            <option value="5">5%</option>
+                            <option value="8">8%</option>
+                        </select>
+                    </div>
+                    <!-- Wybór metody -->
+                    <div class="slider-row">
+                        <label for="method-combo">Metoda obliczania mandatów:</label>
+                        <select id="method-combo">
+                            <option value="dHondt">dHondt</option>
+                            <option value="SainteLague">SainteLague</option>
+                            <option value="HareNiemeyer">HareNiemeyer</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="slider-row">
-                    <label for="nl-slider">Lewica (%):</label>
-                    <input type="range" id="nl-slider" min="0" max="1000" value="200">
-                    <input type="text" id="nl-entry" value="20.0">
-                    <select id="nl-threshold">
-                        <option value="5">5%</option>
-                        <option value="8">8%</option>
-                    </select>
-                </div>
-                <div class="slider-row">
-                    <label for="pis-slider">Prawo i Sprawiedliwość (%):</label>
-                    <input type="range" id="pis-slider" min="0" max="1000" value="200">
-                    <input type="text" id="pis-entry" value="20.0">
-                    <select id="pis-threshold">
-                        <option value="5">5%</option>
-                        <option value="8">8%</option>
-                    </select>
-                </div>
-                <div class="slider-row">
-                    <label for="konf-slider">Konfederacja (%):</label>
-                    <input type="range" id="konf-slider" min="0" max="1000" value="200">
-                    <input type="text" id="konf-entry" value="20.0">
-                    <select id="konf-threshold">
-                        <option value="5">5%</option>
-                        <option value="8">8%</option>
-                    </select>
-                </div>
-                <div class="slider-row">
-                    <label for="ko-slider">Koalicja Obywatelska (%):</label>
-                    <input type="range" id="ko-slider" min="0" max="1000" value="200">
-                    <input type="text" id="ko-entry" value="20.0">
-                    <select id="ko-threshold">
-                        <option value="5">5%</option>
-                        <option value="8">8%</option>
-                    </select>
-                </div>
-                <!-- Wybór metody -->
-                <div class="slider-row">
-                    <label for="method-combo">Metoda obliczania mandatów:</label>
-                    <select id="method-combo">
-                        <option value="dHondt">dHondt</option>
-                        <option value="SainteLague">SainteLague</option>
-                        <option value="HareNiemeyer">HareNiemeyer</option>
-                    </select>
-                </div>
+            </div>
+
+            <div class="chart-section" id="donut-chart-section">
+                <h2>Podział mandatów</h2>
+                <canvas id="donut-chart"></canvas>
+            </div>
+
+            <div class="map-section">
+                <h2>Mapa okręgów</h2>
+                <div id="map"></div>
             </div>
         </div>
 
-        <!-- Wykres donut -->
-        <div class="chart-section">
-            <h2>Podział mandatów</h2>
-            <canvas id="donut-chart"></canvas>
+        <!-- Rząd 2: poparcie krajowe i koalicje -->
+        <div class="row" id="row2">
+            <div class="chart-section" id="bar-chart-section">
+                <h2>Poparcie krajowe</h2>
+                <canvas id="bar-chart"></canvas>
+            </div>
+            <div class="coalitions-section">
+                <h2>Potencjalne koalicje</h2>
+                <div id="coalitions-text"></div>
+            </div>
         </div>
 
-        <!-- Mapa -->
-        <div class="map-section">
-            <h2>Mapa okręgów</h2>
-            <div id="map"></div>
+        <!-- Rząd 3: szczegóły okręgów (widoczne po przewinięciu) -->
+        <div class="row" id="row3">
+            <div class="details-section">
+                <h2>Szczegóły okręgów</h2>
+                <select id="constituency-list" size="10"></select>
+                <canvas id="constituency-chart"></canvas>
+            </div>
         </div>
 
-        <!-- Wykres słupkowy -->
-        <div class="chart-section">
-            <h2>Poparcie krajowe</h2>
-            <canvas id="bar-chart"></canvas>
+        <div class="row" id="row4">
+            <div class="party-section">
+                <h2>Wizualizacja poparcia partii</h2>
+                <label for="party-list">Wybierz partię:</label>
+                <select id="party-list">
+                    <option value="td">Trzecia Droga</option>
+                    <option value="nl">Lewica</option>
+                    <option value="pis">Prawo i Sprawiedliwość</option>
+                    <option value="konf">Konfederacja</option>
+                    <option value="ko">Koalicja Obywatelska</option>
+                    <option value="rz">Razem</option>
+                </select>
+                <div id="party-map"></div>
+            </div>
         </div>
-
-
-        <!-- Szczegóły okręgów -->
-        <div class="details-section">
-            <h2>Szczegóły okręgów</h2>
-            <select id="constituency-list" size="5"></select>
-            <canvas id="constituency-chart"></canvas>
-        </div>
-
-        <!-- Koalicje -->
-        <div class="coalitions-section">
-            <h2>Potencjalne koalicje</h2>
-            <textarea id="coalitions-text" readonly></textarea>
-        </div>
+        
     </div>
 
     <script src="script.js"></script>
