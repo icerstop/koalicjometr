@@ -209,7 +209,7 @@ function addCustomTooltip(regionElement, tooltipText) {
 // Funkcja aktualizująca mapę w wierszu 4 według poparcia wybranej partii
 async function updatePartyMap() {
     // Pobierz plik okregi.svg
-    const response = await fetch('okregi.svg');
+    const response = await fetch('mapa-partie.svg');
     const text = await response.text();
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(text, 'image/svg+xml');
