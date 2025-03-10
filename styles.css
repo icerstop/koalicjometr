@@ -22,8 +22,14 @@
   .header-logo {
     display: block;       /* Żeby zyskać lepszą kontrolę nad centrowaniem */
     margin: 0 auto;       /* Automatyczne wyśrodkowanie */
-    max-width: 50%;       /* Szerokość w procentach względem elementu nadrzędnego */
+    max-width: 20%;       /* Szerokość w procentach względem elementu nadrzędnego */
     height: auto;         /* Zachowanie proporcji */
+  }
+
+  @media (max-width: 600px) {
+    .header-logo {
+      max-width: 50%;
+    }
   }
 
   /* Nowoczesny wygląd czcionki i ogólnego tła */
