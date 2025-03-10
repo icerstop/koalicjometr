@@ -1,2 +1,3 @@
 User-agent: *
 Disallow:
+Sitemap: https://icerstop.github.io/koalicjometr/sitemap.xml
