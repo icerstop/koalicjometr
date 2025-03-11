@@ -45,7 +45,12 @@ class ElectionCalculator {
         const localSupportDeviation = localPastSupportProjection.map(
             (local, i) => (pastSupportProjection[i] !== 0 ? local / pastSupportProjection[i] : 0)
         );
-        let localSupport = support.map((s, i) => s * localSupportDeviation[i]);
+        let localSupport = support.map((s, i) => {
+            if (s===100) {
+                return 100;
+            }
+            return s * localSupportDeviation[i];
+        });    
         //if (constituency.number === 21) {
         //    localSupport.push(5.37); // MN w Opolu
         //}
@@ -54,6 +59,8 @@ class ElectionCalculator {
             const cap = 1.8 * support[nlIndex];
             if (localSupport[nlIndex] > cap) localSupport[nlIndex] = cap;
         }
+
+        localSupport = localSupport.map(value => Math.min(value, 100));
         return localSupport;
     }
 
