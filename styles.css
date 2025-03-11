@@ -226,14 +226,14 @@ input[type="text"]:focus {
 }
 
 .slider-row input[type="text"] {
-  width: 40px;
+  width: 27px;
   flex-shrink: 0;
   text-align: center;
   margin-right: 0;
 }
 
 .slider-row select {
-  width: 60px;
+  width: 45px;
   flex-shrink: 0;
 }
 
