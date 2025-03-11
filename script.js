@@ -28,7 +28,7 @@ class ElectionCalculator {
     calculatePastSupport() {
         const totalMandates = this.constituencies.reduce((sum, c) => sum + c.size, 0);
         const pastSupport = {};
-        const parties = ['td', 'nl', 'pis', 'konf', 'ko', 'rz'];
+        const parties = ['td', 'nl', 'pis', 'konf', 'ko', 'rz', 'poz'];
         for (const party of parties) {
             const totalSupport = this.constituencies.reduce(
                 (sum, c) => sum + (c.pastSupport[party] * c.size), 0
@@ -61,6 +61,10 @@ class ElectionCalculator {
         }
 
         localSupport = localSupport.map(value => Math.min(value, 100));
+        const total = localSupport.reduce((sum, val) => sum + val, 0);
+        if (total > 100) {
+            localSupport = localSupport.map(value => value / total * 100);
+        }
         return localSupport;
     }
 
@@ -147,7 +151,8 @@ const committees = [
     new Committee('pis', 'Prawo i Sprawiedliwość', 5, [['pis', 1]]),
     new Committee('konf', 'Konfederacja', 5, [['konf', 1]]),
     new Committee('ko', 'Koalicja Obywatelska', 5, [['ko', 1]]),
-    new Committee('rz', 'Razem', 5, [['rz', 1]])
+    new Committee('rz', 'Razem', 5, [['rz', 1]]),
+    new Committee('poz', 'Pozostałe', 100, [['poz', 1]])
 ];
 
 const colors = {
@@ -156,7 +161,8 @@ const colors = {
     'pis': '#000080',
     'konf': '#8B4513',
     'ko': '#FFA500',
-    'rz': '#a10249'
+    'rz': '#a10249',
+    'poz': '#808080'
 };
 
 let constituencies = [];
@@ -281,18 +287,19 @@ async function loadConstituencies() {
         .filter(row => row.trim() !== '') // Pomijamy puste linie
         .map((row, index) => {
             const parts = row.split(';');
-            if (parts.length !== 8) {
+            if (parts.length !== 9) {
                 console.error(`Błąd w wierszu ${index + 2}: za mało kolumn (${parts.length} zamiast 8)`);
                 return null;
             }
-            const [number, size, td, nl, pis, konf, ko, rz] = parts;
+            const [number, size, td, nl, pis, konf, ko, rz, poz] = parts;
             const pastSupport = {
                 td: parseFloat(td.replace(',', '.')),
                 nl: parseFloat(nl.replace(',', '.')),
                 pis: parseFloat(pis.replace(',', '.')),
                 konf: parseFloat(konf.replace(',', '.')),
                 ko: parseFloat(ko.replace(',', '.')),
-                rz: parseFloat(rz.replace(',', '.'))
+                rz: parseFloat(rz.replace(',', '.')),
+                poz: parseFloat(poz.replace(',', '.'))
             };
             return new Constituency(parseInt(number), parseInt(size), pastSupport);
         })
@@ -307,8 +314,8 @@ async function loadConstituencies() {
 }
 
 // Interakcja z UI
-const sliders = ['td', 'nl', 'pis', 'konf', 'ko', 'rz'].map(id => document.getElementById(`${id}-slider`));
-const entries = ['td', 'nl', 'pis', 'konf', 'ko', 'rz'].map(id => document.getElementById(`${id}-entry`));
+const sliders = ['td', 'nl', 'pis', 'konf', 'ko', 'rz', 'poz'].map(id => document.getElementById(`${id}-slider`));
+const entries = ['td', 'nl', 'pis', 'konf', 'ko', 'rz', 'poz'].map(id => document.getElementById(`${id}-entry`));
 const thresholds = ['td', 'nl', 'pis', 'konf', 'ko', 'rz'].map(id => document.getElementById(`${id}-threshold`));
 const methodCombo = document.getElementById('method-combo');
 let lastChangedIndex = null;
@@ -407,7 +414,8 @@ function updateDonutChart(mandates) {
         'Prawo i Sprawiedliwość': 'PiS',
         'Konfederacja': 'KONF',
         'Koalicja Obywatelska': 'KO',
-        'Razem': 'RZ'
+        'Razem': 'RZ',
+        'Pozostałe': 'POZ',
     };
 
     // Define colors for parties
@@ -417,7 +425,8 @@ function updateDonutChart(mandates) {
         'Konfederacja': '#8B4513',   // Brąz
         'Koalicja Obywatelska': '#FFA500', // Pomarańczowy
         'Prawo i Sprawiedliwość': '#000080', // Granatowy
-        'Razem': '#880E4F'           // Bordowy dla Razem
+        'Razem': '#880E4F',           // Bordowy dla Razem
+        'Pozostałe': '#808080'       // Szary
     };
 
     // Define preferred order
@@ -427,7 +436,8 @@ function updateDonutChart(mandates) {
         'Koalicja Obywatelska',
         'Trzecia Droga',
         'Konfederacja',
-        'Prawo i Sprawiedliwość'
+        'Prawo i Sprawiedliwość',
+        'Pozostałe'
     ];
     
 
@@ -473,7 +483,7 @@ function updateDonutChart(mandates) {
 }
 
 function updateBarChart(support) {
-    const shortNames = { 'Trzecia Droga': 'TD', 'Lewica': 'NL', 'Prawo i Sprawiedliwość': 'PiS', 'Konfederacja': 'KONF', 'Koalicja Obywatelska': 'KO', 'Razem': 'RZ'};
+    const shortNames = { 'Trzecia Droga': 'TD', 'Lewica': 'NL', 'Prawo i Sprawiedliwość': 'PiS', 'Konfederacja': 'KONF', 'Koalicja Obywatelska': 'KO', 'Razem': 'RZ', 'Pozostałe': 'POZ'};
     const data = committees.map((c, i) => ({ support: support[i], name: shortNames[c.name], color: colors[c.id] }));
     data.sort((a, b) => b.support - a.support);
     barChart.data.labels = data.map(d => d.name);
@@ -534,7 +544,7 @@ function updateConstituencyDetails() {
     if (idx === -1) return;
     const c = constituencies[idx];
     if (!c.mandates) return;
-    const shortNames = { 'Trzecia Droga': 'TD', 'Lewica': 'NL', 'Prawo i Sprawiedliwość': 'PiS', 'Konfederacja': 'KONF', 'Koalicja Obywatelska': 'KO', 'Razem': 'RZ'};
+    const shortNames = { 'Trzecia Droga': 'TD', 'Lewica': 'NL', 'Prawo i Sprawiedliwość': 'PiS', 'Konfederacja': 'KONF', 'Koalicja Obywatelska': 'KO', 'Razem': 'RZ', 'Pozostałe': 'POZ'};
     const data = committees.map((comm, i) => ({
         name: shortNames[comm.name],
         mandates: c.mandates[i],
@@ -549,7 +559,7 @@ function updateConstituencyDetails() {
 
 // Koalicje
 function updateCoalitions(mandates, support) {
-    const shortNames = { 'Trzecia Droga': 'TD', 'Lewica': 'NL', 'Prawo i Sprawiedliwość': 'PiS', 'Konfederacja': 'KONF', 'Koalicja Obywatelska': 'KO', 'Razem': 'RZ'};
+    const shortNames = { 'Trzecia Droga': 'TD', 'Lewica': 'NL', 'Prawo i Sprawiedliwość': 'PiS', 'Konfederacja': 'KONF', 'Koalicja Obywatelska': 'KO', 'Razem': 'RZ', 'Pozostałe': 'POZ'};
     const coalitions = [];
     const n = committees.length;
     for (let r = 1; r <= n; r++) {

@@ -87,6 +87,12 @@
                             <option value="8">8%</option>
                         </select>
                     </div>
+                    <div class="slider-row">
+                        <label for="poz-slider">Pozostałe:</label>
+                        <input type="range" id="poz-slider" min="0" max="1000" value="20">
+                        <input type="text" id="poz-entry" value="2.0">
+                        <select id="poz-threshold" style="visibility: hidden;"></select> 
+                    </div>
                     <!-- Wybór metody -->
                     <div class="slider-row">
                         <label for="method-combo">Metoda obliczania mandatów:</label>
@@ -142,6 +148,7 @@
                     <option value="konf">Konfederacja</option>
                     <option value="ko">Koalicja Obywatelska</option>
                     <option value="rz">Razem</option>
+                    <option value="poz">Pozostałe</option>
                 </select>
                 <div id="party-map"></div>
             </div>
