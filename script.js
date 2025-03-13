@@ -446,14 +446,37 @@ const donutChart = new Chart(document.getElementById('donut-chart'), {
 const barChart = new Chart(document.getElementById('bar-chart'), {
     type: 'bar',
     data: { labels: [], datasets: [{ data: [], backgroundColor: [] }] },
-    options: { scales: { y: { beginAtZero: true } } }
+    options: { scales: { y: { beginAtZero: true } }, plugins: {
+        legend: {
+            display: false
+        }
+    } }
 });
 
 const constituencyChart = new Chart(document.getElementById('constituency-chart'), {
     type: 'bar',
-    data: { labels: [], datasets: [{ data: [], backgroundColor: [] }] },
-    options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+    data: { 
+        labels: [], 
+        datasets: [{
+            data: [], 
+            backgroundColor: [],
+        }] 
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { stepSize: 1 }
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
 });
+
 
 function updateDonutChart(mandates) {
     // Define short names for parties
@@ -538,6 +561,8 @@ function updateBarChart(support) {
     barChart.data.labels = data.map(d => d.name);
     barChart.data.datasets[0].data = data.map(d => d.support);
     barChart.data.datasets[0].backgroundColor = data.map(d => d.color);
+    const maxValue = Math.max(...support);
+    barChart.options.scales.y.suggestedMax = maxValue * 1.03;
     barChart.update();
 }
 
@@ -712,6 +737,7 @@ const majorityLinePlugin = {
 
 // Rejestracja pluginu
 Chart.register(majorityLinePlugin);
+
 
 // Start
 loadConstituencies();

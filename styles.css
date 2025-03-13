@@ -378,6 +378,11 @@ input[type="range"]:focus {
   .container {
     padding: 12px;
   }
+  #party-map-legend {
+    width: 250px;
+    bottom: 120px;
+    left: 20px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -393,6 +398,20 @@ input[type="range"]:focus {
   .coalitions-section,
   .party-section {
     padding: 16px;
+  }
+  #party-map-legend {
+    width: 200px;
+    bottom: 100px;
+    left: 15px;
+  }
+  
+  #party-map-legend .legend-min,
+  #party-map-legend .legend-max {
+    font-size: 12px;
+  }
+  
+  #party-map-legend .legend-canvas {
+    height: 35px;
   }
 }
 
@@ -420,6 +439,23 @@ input[type="range"]:focus {
   
   .slider-row label {
     font-size: 13px;
+  }
+  #party-map-legend {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+  
+  #party-map-legend .legend-canvas {
+    height: 30px;
+  }
+  
+  #party-map-legend .legend-min,
+  #party-map-legend .legend-max {
+    font-size: 11px;
   }
 }
 
