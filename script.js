@@ -237,7 +237,6 @@ async function updatePartyMap() {
     const baseColor = colors[selectedParty];
     
     // Zbierz poparcie w każdym okręgu dla wybranej partii
-    // Upewnij się, że dla danego okręgu obliczone zostało wsparcie (przy kalkulacji mandatów)
     const supportValues = constituencies.map(c => (c.support && c.support[partyIndex]) ? c.support[partyIndex] : 0);
     const minSupport = Math.min(...supportValues);
     const maxSupport = Math.max(...supportValues);
@@ -245,36 +244,86 @@ async function updatePartyMap() {
     // Ustal zakres – żeby uniknąć dzielenia przez zero
     const range = (maxSupport - minSupport) || 1;
     
-    // Dla każdego okręgu, oblicz nowy odcień koloru
+    // Dla każdego okręgu, oblicz nowy odcień koloru i ustaw tooltip
     constituencies.forEach(c => {
         const supportValue = (c.support && c.support[partyIndex]) ? c.support[partyIndex] : 0;
-        // Oblicz współczynnik intensywności: 0 dla najniższego poparcia, 1 dla najwyższego
         const factor = (supportValue - minSupport) / range;
-        // Jeśli poparcie jest na poziomie minimum, odcień będzie bardziej rozjaśniony (np. rozjaśnienie o 50%), a przy maksymalnym – brak rozjaśnienia
         const adjustment = 75 * (1 - factor);
         const newColor = shadeColor(baseColor, adjustment);
         
-            // W funkcji updatePartyMap, zamiast dodawać <title>, dodaj eventy:
         const regionElement = svgDoc.getElementById(`okreg_${c.number}`);
         if (regionElement) {
             regionElement.setAttribute('style', `fill:${newColor};stroke:#000000;stroke-width:1px;pointer-events:visiblePainted;`);
-            // Usuń dotychczasowy tooltip, jeśli istnieje
             const existingTitle = regionElement.querySelector('title');
             if (existingTitle) {
-            existingTitle.remove();
+                existingTitle.remove();
             }
-            // Dodaj własny tooltip
-            const tooltipText = `Okręg ${c.number} - poparcie: ${supportValue.toFixed(2)}%`;
+            const mandateValue = (c.mandates && c.mandates[partyIndex] != null) ? c.mandates[partyIndex] : 0;
+            const tooltipText = `Okręg ${c.number}\nPoparcie: ${supportValue.toFixed(2)}%\nMandaty: ${mandateValue}`;
             addCustomTooltip(regionElement, tooltipText);
         }
     });
     
-    // Wstaw zaktualizowany SVG do kontenera w wierszu 4
+    // Wstaw zaktualizowany SVG do kontenera, przy jednoczesnym zachowaniu kontenera legendy
     const partyMapContainer = document.getElementById('party-map');
     partyMapContainer.innerHTML = "";
+    // Utwórz nowy kontener na legendę
+    const legendWrapper = document.createElement('div');
+    legendWrapper.id = 'party-map-legend';
+    partyMapContainer.appendChild(legendWrapper);
+    // Dołącz mapę (SVG)
     partyMapContainer.appendChild(svgElement);
     
+    // Wywołaj funkcję tworzącą legendę
+    createLegend(minSupport, maxSupport, baseColor);
 }
+
+
+function createLegend(minSupport, maxSupport, baseColor) {
+    const legendContainer = document.getElementById('party-map-legend');
+    legendContainer.innerHTML = '';
+
+    // Tworzymy canvas do narysowania gradientu
+    const legendCanvas = document.createElement('canvas');
+    legendCanvas.className = 'legend-canvas';
+    legendContainer.appendChild(legendCanvas);
+
+    // Ustal rozmiar faktyczny canvas, tak jak dotychczas
+    const legendWidth = legendCanvas.offsetWidth || 200;
+    const legendHeight = legendCanvas.offsetHeight || 20;
+    legendCanvas.width = legendWidth;
+    legendCanvas.height = legendHeight;
+
+    // Rysowanie gradientu
+    const ctx = legendCanvas.getContext('2d');
+    const gradient = ctx.createLinearGradient(0, 0, legendWidth, 0);
+    gradient.addColorStop(0, shadeColor(baseColor, 75));
+    gradient.addColorStop(1, shadeColor(baseColor, 0));
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, legendWidth, legendHeight);
+
+    // Tworzymy kontener na etykiety (min i max)
+    const labelContainer = document.createElement('div');
+    labelContainer.className = 'legend-labels'; // styl w CSS
+    
+    // Etykieta minimalna
+    const minLabel = document.createElement('div');
+    minLabel.className = 'legend-min';
+    minLabel.textContent = `${minSupport.toFixed(1)}%`;
+    
+    // Etykieta maksymalna
+    const maxLabel = document.createElement('div');
+    maxLabel.className = 'legend-max';
+    maxLabel.textContent = `${maxSupport.toFixed(1)}%`;
+    
+    // Dodaj etykiety do kontenera
+    labelContainer.appendChild(minLabel);
+    labelContainer.appendChild(maxLabel);
+    // Dopiero teraz dodaj kontener do legendy
+    legendContainer.appendChild(labelContainer);
+}
+
+
 
 // Dodaj event listener do selecta – aktualizacja mapy przy zmianie wybranej partii
 document.getElementById('party-list').addEventListener('change', updatePartyMap);
@@ -288,7 +337,7 @@ async function loadConstituencies() {
         .map((row, index) => {
             const parts = row.split(';');
             if (parts.length !== 9) {
-                console.error(`Błąd w wierszu ${index + 2}: za mało kolumn (${parts.length} zamiast 8)`);
+                console.error(`Błąd w wierszu ${index + 2}: za mało kolumn (${parts.length} zamiast 9)`);
                 return null;
             }
             const [number, size, td, nl, pis, konf, ko, rz, poz] = parts;
@@ -569,7 +618,9 @@ function updateCoalitions(mandates, support) {
             if (subsetIds.includes('pis') && subsetIds.includes('ko')) continue;
             if (subsetIds.includes('nl') && subsetIds.includes('konf')) continue;
             if (subsetIds.includes('nl') && subsetIds.includes('pis')) continue;
-            if (subsetIds.includes('rz') && subsetIds.includes('konf')) continue;
+            if (subsetIds.includes('rz') && subsetIds.includes('konf') && subsetIds.includes('pis')) continue;
+            if (subsetIds.includes('poz')) continue;
+            if (subset.some(i => mandates[i] === 0)) continue;
             const total = subset.reduce((sum, i) => sum + mandates[i], 0);
             if (total >= 231) {
                 const coalitionData = subset.map(i => ({

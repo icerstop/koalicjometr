@@ -488,3 +488,62 @@ button:active {
 html {
   scroll-behavior: smooth;
 }
+
+#custom-tooltip {
+  white-space: pre-line;
+}
+
+#party-map-legend {
+  position: absolute;
+  bottom: 150px;           /* Zmiana, żeby przesunąć legendę niżej */
+  left: 30px;
+  width: 300px;        /* Możesz zmniejszyć lub ustawić na auto */
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  /* Usuwamy “pudełko” */
+  background-color: transparent; 
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+}
+/* Samo płótno z gradientem (skalujemy szerokość i wysokość w CSS) */
+#party-map-legend .legend-canvas {
+  width: 100%;  /* 100% szerokości kontenera, czyli 300px */
+  height: 40px; /* powiększona wysokość legendy */
+  display: block;
+}
+
+/* Etykiety minimalnego i maksymalnego poparcia */
+#party-map-legend .legend-min,
+#party-map-legend .legend-max {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+}
+
+/* Opcjonalnie, jeśli chcesz min i max w jednej linii po bokach,
+   możesz użyć dodatkowego kontenera i stylu: */
+/*
+#party-map-legend .legend-labels {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+#party-map-legend .legend-min,
+#party-map-legend .legend-max {
+  margin: 0;
+}
+*/
+
+/* Kontener na etykiety w jednym wierszu */
+#party-map-legend .legend-labels {
+  display: flex;
+  justify-content: space-between; /* etykiety rozstawione lewo-prawo */
+  width: 100%;
+  margin-top: 8px;               /* ewentualnie jakiś odstęp od gradientu */
+}
+
+
