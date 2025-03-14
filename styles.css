@@ -1,4 +1,6 @@
-/* Zmienne CSS dla łatwego zarządzania kolorami i stylami */
+/*======================================
+=           CSS Variables              =
+======================================*/
 :root {
   --primary-color: #3a86ff;
   --secondary-color: #ff006e;
@@ -20,6 +22,55 @@
   --poz-color: #808080;
 }
 
+/*======================================
+=           Global Styles              =
+======================================*/
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: var(--light-bg);
+  background-image: linear-gradient(to right, #c19dadc1, #dfb0b0bb, #eadcc3cc, #ebebcacb, #999089d8, #a2a2c2de);
+  color: var(--dark-text);
+  line-height: 1.6;
+}
+
+/*======================================
+=      Utility Classes & Animations    =
+======================================*/
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes loading {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: loading 1.5s infinite;
+}
+
+/*======================================
+=            Header & Logo             =
+======================================*/
 .author-signature {
   border-radius: var(--border-radius);
   background-image: var(--light-bg);
@@ -39,18 +90,9 @@
   }
 }
 
-/* Nowoczesny wygląd czcionki i ogólnego tła */
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0;
-  padding: 20px;
-  background-color: var(--light-bg);
-  background-image: linear-gradient(to right, #c19dadc1, #dfb0b0bb, #eadcc3cc, #ebebcacb, #999089d8, #a2a2c2de);
-  color: var(--dark-text);
-  line-height: 1.6;
-}
-
-/* Główny kontener z delikatną animacją wejścia */
+/*======================================
+=         Container & Layout           =
+======================================*/
 .container {
   display: flex;
   flex-direction: column;
@@ -61,12 +103,9 @@ body {
   animation: fadeIn 1s ease-in-out;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* Wspólne style dla sekcji z nowoczesnymi efektami */
+/*======================================
+=         Section Styling              =
+======================================*/
 .sliders-section,
 .chart-section,
 .map-section,
@@ -82,7 +121,6 @@ body {
   overflow: hidden;
 }
 
-/* Efekt hover dla sekcji */
 .sliders-section:hover,
 .chart-section:hover,
 .map-section:hover,
@@ -93,7 +131,6 @@ body {
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12), 0 8px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Subtelny akcent kolorystyczny dla każdej sekcji */
 .sliders-section::before,
 .chart-section::before,
 .map-section::before,
@@ -110,30 +147,31 @@ body {
   border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
 
-/* Style dla poszczególnych rzędów z odpowiednimi odstępami */
+/*======================================
+=            Grid Rows               =
+======================================*/
 .row {
   display: grid;
   gap: 24px;
   transition: all var(--transition-speed);
 }
 
-/* Rząd 1: trzy kolumny */
 #row1 {
   grid-template-columns: repeat(3, 1fr);
 }
 
-/* Rząd 2: dwie kolumny */
 #row2 {
   grid-template-columns: repeat(2, 1fr);
 }
 
-/* Rząd 3 i 4: jeden element na pełną szerokość */
 #row3,
 #row4 {
   grid-template-columns: 1fr;
 }
 
-/* Nowoczesne nagłówki */
+/*======================================
+=            Headings                =
+======================================*/
 h2 {
   margin-top: 0;
   margin-bottom: 16px;
@@ -145,7 +183,9 @@ h2 {
   padding-bottom: 8px;
 }
 
-/* Ulepszone suwaki */
+/*======================================
+=         Slider Controls            =
+======================================*/
 .slider-row {
   display: flex;
   align-items: center;
@@ -169,7 +209,6 @@ h2 {
   opacity: 0.85;
 }
 
-/* Nowoczesne style dla suwaków */
 input[type="range"] {
   -webkit-appearance: none;
   width: 100%;
@@ -200,7 +239,6 @@ input[type="range"]::-webkit-slider-thumb:hover {
   transform: scale(1.1);
 }
 
-/* Stylizacja pola tekstowego */
 input[type="text"] {
   width: 28px;
   margin-right: 10px;
@@ -218,7 +256,6 @@ input[type="text"]:focus {
   box-shadow: 0 0 0 3px rgba(58, 255, 104, 0.1);
 }
 
-/* Ulepszenia dla suwaków w obrębie slider-row */
 .slider-row input[type="range"] {
   flex: 1;
   min-width: 0;
@@ -237,7 +274,6 @@ input[type="text"]:focus {
   flex-shrink: 0;
 }
 
-/* Stylizacja rozwijanej listy */
 select {
   padding: 6px 2px;
   border: 1px solid #ddd;
@@ -254,7 +290,9 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.1);
 }
 
-/* Ulepszone style dla canvas i wykresów */
+/*======================================
+=          Canvas & Charts             =
+======================================*/
 canvas {
   max-width: 100%;
   height: auto;
@@ -262,7 +300,19 @@ canvas {
   box-shadow: none;
 }
 
-/* Dostosowanie mapy */
+#constituency-chart {
+  width: 100%;
+  max-height: 200px;
+  transition: transform 0.3s ease;
+}
+
+#constituency-chart:hover {
+  transform: scale(1.01);
+}
+
+/*======================================
+=            Map Styling               =
+======================================*/
 #map {
   width: 100%;
   height: auto;
@@ -284,17 +334,19 @@ canvas {
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
 }
 
-#constituency-chart {
-  width: 100%;
-  max-height: 200px;
-  transition: transform 0.3s ease;
+#map path,
+#party-map path {
+  transition: fill 0.3s, stroke-width 0.3s;
 }
 
-#constituency-chart:hover {
-  transform: scale(1.01);
+#map path:hover,
+#party-map path:hover {
+  stroke-width: 2;
 }
 
-/* Kolory suwaków dla partii */
+/*======================================
+=           Party Sliders              =
+======================================*/
 #td-slider {
   background: linear-gradient(to right, rgba(255, 255, 0, 0.3), rgba(255, 255, 0, 0.8));
 }
@@ -351,25 +403,92 @@ canvas {
   background: var(--poz-color);
 }
 
-/* Dodatkowe style dla suwaków w zależności od aktywności */
+/*======================================
+=       Additional Range Focus         =
+======================================*/
 input[type="range"]:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
 }
 
-/* Animacja dla elementów mapy przy interakcji */
-#map path,
-#party-map path {
-  transition: fill 0.3s, stroke-width 0.3s;
-}
-
-#map path:hover,
-#party-map path:hover {
-  stroke-width: 2;
+/*======================================
+=           Button Styling             =
+======================================*/
+button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
 }
 
-/* Responsywność dla różnych rozmiarów ekranów */
+button:hover {
+  background-color: #2a75e8;
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/*======================================
+=           Tooltip Styling            =
+======================================*/
+#custom-tooltip {
+  white-space: pre-line;
+}
+
+/*======================================
+=      Party Map & Legend Styling      =
+======================================*/
+#party-map-container {
+  position: relative;
+  width: 100%;
+  margin-top: 15px;
+}
+
+#party-map-legend {
+  position: relative;
+  width: 80%;
+  max-width: 300px;
+  margin: 15px auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background-color: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  box-shadow: none;
+}
+
+#party-map-legend .legend-canvas {
+  width: 100%;
+  height: 30px;
+  display: block;
+  border-radius: 4px;
+}
+
+#party-map-legend .legend-labels {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 4px;
+}
+
+#party-map-legend .legend-min,
+#party-map-legend .legend-max {
+  font-size: 12px;
+  font-weight: 600;
+  color: #000;
+}
+
+/*======================================
+=           Responsive Styles          =
+======================================*/
 @media (max-width: 1200px) {
   #row1 {
     grid-template-columns: 1fr 1fr;
@@ -393,6 +512,15 @@ input[type="range"]:focus {
   .coalitions-section,
   .party-section {
     padding: 16px;
+  }
+  
+  #party-map-legend {
+    width: 90%;
+  }
+  
+  #party-map-legend .legend-min,
+  #party-map-legend .legend-max {
+    font-size: 11px;
   }
 }
 
@@ -421,9 +549,22 @@ input[type="range"]:focus {
   .slider-row label {
     font-size: 13px;
   }
+  
+  #party-map-legend {
+    width: 95%;
+    padding: 4px 8px;
+  }
+  
+  #party-map-legend .legend-canvas {
+    height: 25px;
+  }
+  
+  #party-map-legend .legend-min,
+  #party-map-legend .legend-max {
+    font-size: 10px;
+  }
 }
 
-/* Dodatkowe udogodnienia dla interfejsu mobilnego */
 @media (hover: none) {
   .sliders-section:hover,
   .chart-section:hover,
@@ -440,156 +581,3 @@ input[type="range"]:focus {
     height: 22px;
   }
 }
-
-/* Animacja ładowania dla elementów */
-.loading {
-  position: relative;
-  overflow: hidden;
-}
-
-.loading::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
-  animation: loading 1.5s infinite;
-}
-
-@keyframes loading {
-  0% { left: -100%; }
-  100% { left: 100%; }
-}
-
-/* Stylizacja przycisków, jeśli występują */
-button {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s, transform 0.2s;
-}
-
-button:hover {
-  background-color: #2a75e8;
-  transform: translateY(-2px);
-}
-
-button:active {
-  transform: translateY(0);
-}
-
-/* Delikatny skroll do sekcji */
-html {
-  scroll-behavior: smooth;
-}
-
-#custom-tooltip {
-  white-space: pre-line;
-}
-
-/* Styl dla nowego kontenera */
-#party-map-container {
-  position: relative;
-  width: 100%;
-  margin-top: 15px;
-}
-
-/* Kontener mapy partii */
-#party-map {
-  max-width: 600px;
-  margin: 0 auto;
-  overflow: hidden;
-}
-
-#party-map svg {
-  width: 100%;
-  height: auto;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
-}
-
-#party-map-legend {
-  position: relative; /* Zmienione z absolute na relative */
-  width: 80%;
-  max-width: 300px;
-  margin: 15px auto 0; /* Centrowanie i odstęp od mapy */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  background-color: none;
-  border-radius: 8px;
-  padding: 6px 10px;
-  box-shadow: none;
-}
-
-/* Samo płótno z gradientem (skalujemy szerokość i wysokość w CSS) */
-#party-map-legend .legend-canvas {
-  width: 100%;
-  height: 30px;
-  display: block;
-  border-radius: 4px;
-}
-
-#party-map-legend .legend-labels {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: 4px;
-}
-
-#party-map-legend .legend-min,
-#party-map-legend .legend-max {
-  font-size: 12px;
-  font-weight: 600;
-  color: #000;
-}
-
-/* Opcjonalnie, jeśli chcesz min i max w jednej linii po bokach,
-   możesz użyć dodatkowego kontenera i stylu: */
-/*
-#party-map-legend .legend-labels {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
-#party-map-legend .legend-min,
-#party-map-legend .legend-max {
-  margin: 0;
-}
-*/
-
-/* Kontener na etykiety w jednym wierszu */
-/* Responsywność */
-@media (max-width: 768px) {
-  #party-map-legend {
-    width: 90%;
-  }
-  
-  #party-map-legend .legend-min,
-  #party-map-legend .legend-max {
-    font-size: 11px;
-  }
-}
-
-@media (max-width: 600px) {
-  #party-map-legend {
-    width: 95%;
-    padding: 4px 8px;
-  }
-  
-  #party-map-legend .legend-canvas {
-    height: 25px;
-  }
-  
-  #party-map-legend .legend-min,
-  #party-map-legend .legend-max {
-    font-size: 10px;
-  }
-}
-

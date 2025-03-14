@@ -1,3 +1,7 @@
+// ============================================================
+// GLOBALNE DEFINICJE, STAŁE I KLASY
+// ============================================================
+
 // Definicja klas
 class Committee {
     constructor(id, name, threshold, pastSupportEquivalence) {
@@ -46,11 +50,11 @@ class ElectionCalculator {
             (local, i) => (pastSupportProjection[i] !== 0 ? local / pastSupportProjection[i] : 0)
         );
         let localSupport = support.map((s, i) => {
-            if (s===100) {
+            if (s === 100) {
                 return 100;
             }
             return s * localSupportDeviation[i];
-        });    
+        });
         //if (constituency.number === 21) {
         //    localSupport.push(5.37); // MN w Opolu
         //}
@@ -144,7 +148,7 @@ class ElectionCalculator {
     }
 }
 
-// Inicjalizacja danych
+// Globalne stałe i zmienne
 const committees = [
     new Committee('td', 'Trzecia Droga', 5, [['td', 1]]),
     new Committee('nl', 'Lewica', 5, [['nl', 1]]),
@@ -165,8 +169,23 @@ const colors = {
     'poz': '#808080'
 };
 
+// Globalna mapa skrótów nazw partii (usunięto duplikację)
+const SHORT_NAMES = {
+    'Trzecia Droga': 'TD',
+    'Lewica': 'NL',
+    'Prawo i Sprawiedliwość': 'PiS',
+    'Konfederacja': 'KONF',
+    'Koalicja Obywatelska': 'KO',
+    'Razem': 'RZ',
+    'Pozostałe': 'POZ'
+};
+
 let constituencies = [];
 let calculator;
+
+// ============================================================
+// FUNKCJE POMOCNICZE (UTILITIES)
+// ============================================================
 
 // Funkcja do rozjaśniania lub przyciemniania koloru
 function shadeColor(color, percent) {
@@ -184,7 +203,7 @@ function shadeColor(color, percent) {
     ).toString(16).slice(1);
 }
 
-// Utwórz element tooltip, jeśli jeszcze go nie masz
+// Funkcja tworząca i zwracająca element tooltip (jeśli nie istnieje)
 let customTooltip = document.getElementById('custom-tooltip');
 if (!customTooltip) {
     customTooltip = document.createElement('div');
@@ -201,7 +220,7 @@ if (!customTooltip) {
     document.body.appendChild(customTooltip);
 }
 
-// Funkcja, która dołącza event listenery do elementu SVG
+// Funkcja dołączająca event listenery do elementu SVG – tooltip
 function addCustomTooltip(regionElement, tooltipText) {
     regionElement.addEventListener('mouseover', (e) => {
         customTooltip.textContent = tooltipText;
@@ -218,8 +237,11 @@ function addCustomTooltip(regionElement, tooltipText) {
     });
 }
 
+// ============================================================
+// FUNKCJE ODPOWIEDZIALNE ZA MAPY I WYKRESY
+// ============================================================
 
-// Funkcja aktualizująca mapę w wierszu 4 według poparcia wybranej partii
+// --- Aktualizacja mapy partii ---
 async function updatePartyMap() {
     // Pobierz plik okregi.svg
     const response = await fetch('mapa-partie.svg');
@@ -259,7 +281,7 @@ async function updatePartyMap() {
                 existingTitle.remove();
             }
             const mandateValue = (c.mandates && c.mandates[partyIndex] != null) ? c.mandates[partyIndex] : 0;
-            const tooltipText = `Okręg ${c.number}\nPoparcie: ${supportValue.toFixed(2)}%\nMandaty: ${mandateValue}`;
+            const tooltipText = `Okręg ${c.number}\nPoparcie: ${supportValue.toFixed(2)}%\nMandaty: ${mandateValue}/${c.size}`;
             addCustomTooltip(regionElement, tooltipText);
         }
     });
@@ -277,7 +299,6 @@ async function updatePartyMap() {
     // Wywołaj funkcję tworzącą legendę
     createLegend(minSupport, maxSupport, baseColor);
 }
-
 
 function createLegend(minSupport, maxSupport, baseColor) {
     const legendContainer = document.getElementById('party-map-legend');
@@ -304,7 +325,7 @@ function createLegend(minSupport, maxSupport, baseColor) {
 
     // Tworzymy kontener na etykiety (min i max)
     const labelContainer = document.createElement('div');
-    labelContainer.className = 'legend-labels'; // styl w CSS
+    labelContainer.className = 'legend-labels';
     
     // Etykieta minimalna
     const minLabel = document.createElement('div');
@@ -319,21 +340,202 @@ function createLegend(minSupport, maxSupport, baseColor) {
     // Dodaj etykiety do kontenera
     labelContainer.appendChild(minLabel);
     labelContainer.appendChild(maxLabel);
-    // Dopiero teraz dodaj kontener do legendy
     legendContainer.appendChild(labelContainer);
 }
 
+// --- Aktualizacja wykresów ---
+function updateDonutChart(mandates) {
+    // Definicja lokalnej mapy kolorów – pozostawiono bez zmian
+    const colorMapping = {
+        'Trzecia Droga': '#FFFF00',  // Żółty
+        'Lewica': '#FF0000',         // Czerwony
+        'Konfederacja': '#8B4513',   // Brąz
+        'Koalicja Obywatelska': '#FFA500', // Pomarańczowy
+        'Prawo i Sprawiedliwość': '#000080', // Granatowy
+        'Razem': '#880E4F',           // Bordowy dla Razem
+        'Pozostałe': '#808080'       // Szary
+    };
 
+    // Przygotowanie danych – wykorzystanie globalnego SHORT_NAMES
+    const labels = [];
+    const data = [];
+    const bgColors = [];
+    const preferredOrder = [
+        'Razem',
+        'Lewica',
+        'Koalicja Obywatelska',
+        'Trzecia Droga',
+        'Konfederacja',
+        'Prawo i Sprawiedliwość',
+        'Pozostałe'
+    ];
+    
+    preferredOrder.forEach(partyName => {
+        const idx = committees.findIndex(c => c.name === partyName);
+        if (idx !== -1 && mandates[idx] > 0) {
+            data.push(mandates[idx]);
+            labels.push(`${SHORT_NAMES[partyName]} (${mandates[idx]})`);
+            bgColors.push(colorMapping[partyName]);
+        }
+    });
 
-// Dodaj event listener do selecta – aktualizacja mapy przy zmianie wybranej partii
+    donutChart.data.labels = labels;
+    donutChart.data.datasets[0].data = data;
+    donutChart.data.datasets[0].backgroundColor = bgColors;
+    
+    donutChart.options = {
+        plugins: {
+            legend: {
+                position: 'bottom'
+            },
+            majorityLinePlugin: {}
+        },
+        cutout: '60%',
+        circumference: 180,
+        rotation: 270,
+        layout: {
+            padding: {
+                bottom: 10
+            }
+        }
+    };
+
+    donutChart.update();
+}
+
+function updateBarChart(support) {
+    const data = committees.map((c, i) => ({ support: support[i], name: SHORT_NAMES[c.name], color: colors[c.id] }));
+    const dataOthers = data.filter(item => item.name !== 'POZ').sort((a, b) => b.support - a.support);
+    const dataPoz = data.filter(item => item.name === 'POZ');
+    const sortedData = [...dataOthers, ...dataPoz];
+    barChart.data.labels = sortedData.map(d => d.name);
+    barChart.data.datasets[0].data = sortedData.map(d => d.support);
+    barChart.data.datasets[0].backgroundColor = sortedData.map(d => d.color);
+    const maxValue = Math.max(...support);
+    barChart.options.scales.y.suggestedMax = maxValue * 1.03;
+    barChart.update();
+}
+
+async function colorMap() {
+    const response = await fetch('okregi.svg');
+    const text = await response.text();
+    const parser = new DOMParser();
+    const svgDoc = parser.parseFromString(text, 'image/svg+xml');
+    const svgElement = svgDoc.querySelector('svg');
+    svgElement.setAttribute('width', '100%');
+    svgElement.setAttribute('height', 'auto');
+    svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    const winners = getWinners();
+    for (const [okreg, winner] of Object.entries(winners)) {
+        const path = svgDoc.getElementById(`okreg_${okreg}`);
+        if (path) {
+            path.setAttribute('style', `fill:${colors[winner] || '#FFFFFF'};stroke:#000000;stroke-width:1px;`);
+        }
+    }
+    const serializer = new XMLSerializer();
+    document.getElementById('map').innerHTML = serializer.serializeToString(svgDoc);
+}
+
+function getWinners() {
+    const winners = {};
+    for (const c of constituencies) {
+        if (c.support) {
+            const maxSupport = Math.max(...c.support);
+            const winnerIndex = c.support.indexOf(maxSupport);
+            winners[c.number] = committees[winnerIndex].id;
+        }
+    }
+    return winners;
+}
+
+// --- Aktualizacja szczegółów okręgów ---
+function populateConstituencyList() {
+    const list = document.getElementById('constituency-list');
+    constituencies.forEach(c => {
+        const option = document.createElement('option');
+        option.text = `Okręg ${c.number} (${c.size} mandatów)`;
+        list.add(option);
+    });
+    list.selectedIndex = 0;
+    list.addEventListener('change', updateConstituencyDetails);
+}
+
+function updateConstituencyDetails() {
+    const list = document.getElementById('constituency-list');
+    const idx = list.selectedIndex;
+    if (idx === -1) return;
+    const c = constituencies[idx];
+    if (!c.mandates) return;
+    const data = committees.map((comm, i) => ({
+        name: SHORT_NAMES[comm.name],
+        mandates: c.mandates[i],
+        color: colors[comm.id]
+    })).filter(d => d.mandates > 0);
+    data.sort((a, b) => b.mandates - a.mandates);
+    constituencyChart.data.labels = data.map(d => d.name);
+    constituencyChart.data.datasets[0].data = data.map(d => d.mandates);
+    constituencyChart.data.datasets[0].backgroundColor = data.map(d => d.color);
+    constituencyChart.update();
+}
+
+// --- Aktualizacja koalicji ---
+function updateCoalitions(mandates, support) {
+    const coalitions = [];
+    const n = committees.length;
+    for (let r = 1; r <= n; r++) {
+        const combinations = getCombinations([...Array(n).keys()], r);
+        for (const subset of combinations) {
+            const subsetIds = subset.map(i => committees[i].id);
+            if (subsetIds.includes('pis') && subsetIds.includes('ko')) continue;
+            if (subsetIds.includes('nl') && subsetIds.includes('konf')) continue;
+            if (subsetIds.includes('nl') && subsetIds.includes('pis')) continue;
+            if (subsetIds.includes('rz') && subsetIds.includes('konf')) continue;
+            if (subsetIds.includes('rz') && subsetIds.includes('pis')) continue;
+            if (subsetIds.includes('rz') && subsetIds.includes('ko')) continue;
+            if (subsetIds.includes('poz')) continue;
+            if (subset.some(i => mandates[i] === 0)) continue;
+            const total = subset.reduce((sum, i) => sum + mandates[i], 0);
+            if (total >= 231) {
+                const coalitionData = subset.map(i => ({
+                    abbr: SHORT_NAMES[committees[i].name],
+                    mandates: mandates[i],
+                    support: support[i]
+                }));
+                coalitionData.sort((a, b) => b.mandates - a.mandates || b.support - a.support);
+                const coalitionStr = coalitionData.length === 1
+                    ? `Samodzielna większość: ${coalitionData[0].abbr} (${coalitionData[0].mandates})`
+                    : `Koalicja: ${coalitionData.map(d => `${d.abbr}(${d.mandates})`).join('+')} = ${total}`;
+                coalitions.push({ total, str: coalitionStr });
+            }
+        }
+    }
+    coalitions.sort((a, b) => b.total - a.total);
+    const uniqueCoalitions = [...new Set(coalitions.map(c => c.str))];
+    document.getElementById('coalitions-text').innerText = uniqueCoalitions.join('\n') || 'Brak koalicji dających większość';
+}
+
+function getCombinations(arr, r) {
+    if (r === 1) return arr.map(val => [val]);
+    const result = [];
+    arr.forEach((val, idx) => {
+        const smaller = getCombinations(arr.slice(idx + 1), r - 1);
+        smaller.forEach(small => result.push([val, ...small]));
+    });
+    return result;
+}
+
+// ============================================================
+// OBSŁUGA INTERFEJSU UŻYTKOWNIKA I EVENTY
+// ============================================================
+
 document.getElementById('party-list').addEventListener('change', updatePartyMap);
 
 async function loadConstituencies() {
     const response = await fetch('data/wybory2023.csv');
     const text = await response.text();
-    const rows = text.trim().split('\n').slice(1); // Usuwamy białe znaki i pomijamy nagłówek
+    const rows = text.trim().split('\n').slice(1);
     constituencies = rows
-        .filter(row => row.trim() !== '') // Pomijamy puste linie
+        .filter(row => row.trim() !== '')
         .map((row, index) => {
             const parts = row.split(';');
             if (parts.length !== 9) {
@@ -352,7 +554,7 @@ async function loadConstituencies() {
             };
             return new Constituency(parseInt(number), parseInt(size), pastSupport);
         })
-        .filter(c => c !== null); // Usuwamy błędne wiersze
+        .filter(c => c !== null);
     if (constituencies.length === 0) {
         console.error('Nie udało się załadować żadnych danych z pliku CSV.');
         return;
@@ -362,7 +564,6 @@ async function loadConstituencies() {
     calculateMandates();
 }
 
-// Interakcja z UI
 const sliders = ['td', 'nl', 'pis', 'konf', 'ko', 'rz', 'poz'].map(id => document.getElementById(`${id}-slider`));
 const entries = ['td', 'nl', 'pis', 'konf', 'ko', 'rz', 'poz'].map(id => document.getElementById(`${id}-entry`));
 const thresholds = ['td', 'nl', 'pis', 'konf', 'ko', 'rz'].map(id => document.getElementById(`${id}-threshold`));
@@ -436,6 +637,10 @@ function calculateMandates() {
     updatePartyMap();
 }
 
+// ============================================================
+// KONFIGURACJA I REJESTRACJA WYKRESÓW ORAZ PLUGINÓW
+// ============================================================
+
 // Plugin rysujący etykiety nad słupkami
 const barDataLabelPlugin = {
     id: 'barDataLabelPlugin',
@@ -455,35 +660,34 @@ const barDataLabelPlugin = {
         });
       });
     }
-  };
+};
 
-
-// Wykresy
+// Inicjalizacja wykresu donut
 const donutChart = new Chart(document.getElementById('donut-chart'), {
     type: 'doughnut',
     data: { labels: [], datasets: [{ data: [], backgroundColor: [] }] },
-    options: { cutout: '50%', plugins: { legend: { position: 'bottom' }, datalabels: {display: false}, barDataLabelPlugin: false, tooltip:{enabled: false} } }
+    options: { cutout: '50%', plugins: { legend: { position: 'bottom' }, datalabels: {display: false}, tooltip:{enabled: false} } }
 });
 
+// Inicjalizacja wykresu słupkowego
 const barChart = new Chart(document.getElementById('bar-chart'), {
     type: 'bar',
     data: { labels: [], datasets: [{ data: [], backgroundColor: [] }] },
     options: { 
         scales: { y: { beginAtZero: true } },
         plugins: {
-            plugins: [barDataLabelPlugin],
             legend: { display: false },
             barDataLabelPlugin: {
                 color: '#000',
-                font: 'bold 12px sans-serif'
+                font: 'bold 18px sans-serif'
             },
-            tooltip:{
-                enabled: false
-            }
+            tooltip:{ enabled: false }
         }
-    }
+    },
+    plugins: [barDataLabelPlugin]
 });
 
+// Inicjalizacja wykresu dla szczegółów okręgów
 const constituencyChart = new Chart(document.getElementById('constituency-chart'), {
     type: 'bar',
     data: { 
@@ -501,278 +705,49 @@ const constituencyChart = new Chart(document.getElementById('constituency-chart'
             }
         },
         plugins: {
-            legend: {
-                display: false
-            }
+            legend: { display: false }
         }
     }
 });
 
-
-function updateDonutChart(mandates) {
-    // Define short names for parties
-    const shortNameMapping = {
-        'Trzecia Droga': 'TD',
-        'Lewica': 'NL',
-        'Prawo i Sprawiedliwość': 'PiS',
-        'Konfederacja': 'KONF',
-        'Koalicja Obywatelska': 'KO',
-        'Razem': 'RZ',
-        'Pozostałe': 'POZ',
-    };
-
-    // Define colors for parties
-    const colorMapping = {
-        'Trzecia Droga': '#FFFF00',  // Żółty
-        'Lewica': '#FF0000',         // Czerwony
-        'Konfederacja': '#8B4513',   // Brąz
-        'Koalicja Obywatelska': '#FFA500', // Pomarańczowy
-        'Prawo i Sprawiedliwość': '#000080', // Granatowy
-        'Razem': '#880E4F',           // Bordowy dla Razem
-        'Pozostałe': '#808080'       // Szary
-    };
-
-    // Define preferred order
-    const preferredOrder = [
-        'Razem',
-        'Lewica',
-        'Koalicja Obywatelska',
-        'Trzecia Droga',
-        'Konfederacja',
-        'Prawo i Sprawiedliwość',
-        'Pozostałe'
-    ];
-    
-
-    // Prepare data arrays
-    const labels = [];
-    const data = [];
-    const bgColors = [];
-    
-    // Process parties in preferred order
-    preferredOrder.forEach(partyName => {
-        const idx = committees.findIndex(c => c.name === partyName);
-        if (idx !== -1 && mandates[idx] > 0) {
-            data.push(mandates[idx]);
-            labels.push(`${shortNameMapping[partyName]} (${mandates[idx]})`);
-            bgColors.push(colorMapping[partyName]);
-        }
-    });
-
-    // Update chart
-    donutChart.data.labels = labels;
-    donutChart.data.datasets[0].data = data;
-    donutChart.data.datasets[0].backgroundColor = bgColors;
-    
-    // Configure chart options for semi-donut
-    donutChart.options = {
-        plugins: {
-            legend: {
-                position: 'bottom'
-            },
-            majorityLinePlugin: {}
-        },
-        cutout: '60%',         // Creates the donut hole
-        circumference: 180,    // Half circle (180 degrees)
-        rotation: 270,         // Start from the top (270 degrees rotates so the middle is at the top)
-        layout: {
-            padding: {
-                bottom: 10     // Add some padding at the bottom for a flat base
-            }
-        }
-    };
-
-    donutChart.update();
-}
-
-function updateBarChart(support) {
-    const shortNames = { 'Trzecia Droga': 'TD', 'Lewica': 'NL', 'Prawo i Sprawiedliwość': 'PiS', 'Konfederacja': 'KONF', 'Koalicja Obywatelska': 'KO', 'Razem': 'RZ', 'Pozostałe': 'POZ'};
-    const data = committees.map((c, i) => ({ support: support[i], name: shortNames[c.name], color: colors[c.id] }));
-    const dataOthers = data.filter(item => item.name !== 'POZ').sort((a, b) => b.support - a.support);
-    const dataPoz = data.filter(item => item.name === 'POZ');
-    // Połącz, żeby POZ były zawsze na końcu
-    const sortedData = [...dataOthers, ...dataPoz];
-    barChart.data.labels = sortedData.map(d => d.name);
-    barChart.data.datasets[0].data = sortedData.map(d => d.support);
-    barChart.data.datasets[0].backgroundColor = sortedData.map(d => d.color);
-    const maxValue = Math.max(...support);
-    barChart.options.scales.y.suggestedMax = maxValue * 1.03;
-    barChart.update();
-}
-
-// Mapa
-async function colorMap() {
-    const response = await fetch('okregi.svg');
-    const text = await response.text();
-    const parser = new DOMParser();
-    const svgDoc = parser.parseFromString(text, 'image/svg+xml');
-    const svgElement = svgDoc.querySelector('svg');
-    svgElement.setAttribute('width', '100%');  // Pełna szerokość kontenera
-    svgElement.setAttribute('height', 'auto'); // Automatyczna wysokość
-    svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-    const winners = getWinners();
-    for (const [okreg, winner] of Object.entries(winners)) {
-        const path = svgDoc.getElementById(`okreg_${okreg}`);
-        if (path) {
-            path.setAttribute('style', `fill:${colors[winner] || '#FFFFFF'};stroke:#000000;stroke-width:1px;`);
-        }
-    }
-    const serializer = new XMLSerializer();
-    document.getElementById('map').innerHTML = serializer.serializeToString(svgDoc);
-}
-
-function getWinners() {
-    const winners = {};
-    for (const c of constituencies) {
-        if (c.support) {
-
-            const maxSupport = Math.max(...c.support);
-            const winnerIndex = c.support.indexOf(maxSupport);
-            winners[c.number] = committees[winnerIndex].id;
-        }
-    }
-    return winners;
-}
-
-// Szczegóły okręgów
-function populateConstituencyList() {
-    const list = document.getElementById('constituency-list');
-    constituencies.forEach(c => {
-        const option = document.createElement('option');
-        option.text = `Okręg ${c.number} (${c.size} mandatów)`;
-        list.add(option);
-    });
-    list.selectedIndex = 0;
-    list.addEventListener('change', updateConstituencyDetails);
-}
-
-function updateConstituencyDetails() {
-    const list = document.getElementById('constituency-list');
-    const idx = list.selectedIndex;
-    if (idx === -1) return;
-    const c = constituencies[idx];
-    if (!c.mandates) return;
-    const shortNames = { 'Trzecia Droga': 'TD', 'Lewica': 'NL', 'Prawo i Sprawiedliwość': 'PiS', 'Konfederacja': 'KONF', 'Koalicja Obywatelska': 'KO', 'Razem': 'RZ', 'Pozostałe': 'POZ'};
-    const data = committees.map((comm, i) => ({
-        name: shortNames[comm.name],
-        mandates: c.mandates[i],
-        color: colors[comm.id]
-    })).filter(d => d.mandates > 0);
-    data.sort((a, b) => b.mandates - a.mandates);
-    constituencyChart.data.labels = data.map(d => d.name);
-    constituencyChart.data.datasets[0].data = data.map(d => d.mandates);
-    constituencyChart.data.datasets[0].backgroundColor = data.map(d => d.color);
-    constituencyChart.update();
-}
-
-// Koalicje
-function updateCoalitions(mandates, support) {
-    const shortNames = { 'Trzecia Droga': 'TD', 'Lewica': 'NL', 'Prawo i Sprawiedliwość': 'PiS', 'Konfederacja': 'KONF', 'Koalicja Obywatelska': 'KO', 'Razem': 'RZ', 'Pozostałe': 'POZ'};
-    const coalitions = [];
-    const n = committees.length;
-    for (let r = 1; r <= n; r++) {
-        const combinations = getCombinations([...Array(n).keys()], r);
-        for (const subset of combinations) {
-            const subsetIds = subset.map(i => committees[i].id);
-            if (subsetIds.includes('pis') && subsetIds.includes('ko')) continue;
-            if (subsetIds.includes('nl') && subsetIds.includes('konf')) continue;
-            if (subsetIds.includes('nl') && subsetIds.includes('pis')) continue;
-            if (subsetIds.includes('rz') && subsetIds.includes('konf')) continue;
-            if (subsetIds.includes('rz') && subsetIds.includes('pis')) continue;
-            if (subsetIds.includes('poz')) continue;
-            if (subset.some(i => mandates[i] === 0)) continue;
-            const total = subset.reduce((sum, i) => sum + mandates[i], 0);
-            if (total >= 231) {
-                const coalitionData = subset.map(i => ({
-                    abbr: shortNames[committees[i].name],
-                    mandates: mandates[i],
-                    support: support[i]
-                }));
-                coalitionData.sort((a, b) => b.mandates - a.mandates || b.support - a.support);
-                const coalitionStr = coalitionData.length === 1
-                    ? `Samodzielna większość: ${coalitionData[0].abbr} (${coalitionData[0].mandates})`
-                    : `Koalicja: ${coalitionData.map(d => `${d.abbr}(${d.mandates})`).join('+')} = ${total}`;
-                coalitions.push({ total, str: coalitionStr });
-            }
-        }
-    }
-    coalitions.sort((a, b) => b.total - a.total);
-    const uniqueCoalitions = [...new Set(coalitions.map(c => c.str))];
-    document.getElementById('coalitions-text').innerText = uniqueCoalitions.join('\n') || 'Brak koalicji dających większość';
-}
-
-function getCombinations(arr, r) {
-    if (r === 1) return arr.map(val => [val]);
-    const result = [];
-    arr.forEach((val, idx) => {
-        const smaller = getCombinations(arr.slice(idx + 1), r - 1);
-        smaller.forEach(small => result.push([val, ...small]));
-    });
-    return result;
-}
-
-const majorityThreshold = 231;
-
+// Plugin rysujący linię większości
 const majorityLinePlugin = {
   id: 'majorityLinePlugin',
   afterDraw: (chart) => {
     const ctx = chart.ctx;
-    
-    // Suma wszystkich mandatów
     const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
     if (total === 0) return;
-
-    // Ułamek odpowiadający 231 mandatom
-    // (opcjonalnie można go 'clampować', np. Math.min(231 / total, 1))
-    const fraction = majorityThreshold / total;
-
-    // Metadane pierwszego (i właściwie jedynego) datasetu
+    const fraction = 231 / total;
     const meta = chart.getDatasetMeta(0);
     if (!meta || !meta.data || !meta.data.length) return;
-
-    // Bierzemy pierwszy "arc" (ale w zasadzie każdy ma to samo .x, .y, .outerRadius itd.)
     const arc = meta.data[0];
-
     const centerX = arc.x;
     const centerY = arc.y;
     const outerRadius = arc.outerRadius;
     const innerRadius = arc.innerRadius;
-
-    // Startowy kąt w radianach (domyślnie Chart.js liczy 0° przy 3-godz., rośnie w prawo)
     const startAngle = (chart.options.rotation || 0) * (Math.PI / 180);
-
-    // Łączna „długość” w radianach (u Ciebie 180°, czyli Math.PI)
     const totalCircumference = (chart.options.circumference || 360) * (Math.PI / 180);
-
-    // Kąt, gdzie chcemy narysować linię
-    // UWAGA: jeśli okaże się, że kreska ląduje po złej stronie,
-    // spróbuj odwrócić znak: startAngle - fraction * totalCircumference
     const offsetDeg = 270; 
     const offset = offsetDeg * (Math.PI / 180);
-
     const angle = startAngle + fraction * totalCircumference + offset;
-
-    // Obliczamy dwa punkty: na wewnętrznym i zewnętrznym promieniu
     const x1 = centerX + innerRadius * Math.cos(angle);
     const y1 = centerY + innerRadius * Math.sin(angle);
     const x2 = centerX + outerRadius * Math.cos(angle);
     const y2 = centerY + outerRadius * Math.sin(angle);
-
-    // Rysujemy linię
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.lineWidth = 2;
-    ctx.strokeStyle = 'black'; // ewentualnie zmień na inny kolor
+    ctx.strokeStyle = 'black';
     ctx.stroke();
     ctx.restore();
   }
 };
 
-// Rejestracja pluginu
 Chart.register(majorityLinePlugin);
 
-
-// Start
+// ============================================================
+// START APLIKACJI
+// ============================================================
 loadConstituencies();
