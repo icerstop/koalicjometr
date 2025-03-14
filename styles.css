@@ -226,7 +226,7 @@ input[type="text"]:focus {
 }
 
 .slider-row input[type="text"] {
-  width: 27px;
+  width: 35px;
   flex-shrink: 0;
   text-align: center;
   margin-right: 0;
@@ -259,7 +259,7 @@ canvas {
   max-width: 100%;
   height: auto;
   border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: none;
 }
 
 /* Dostosowanie mapy */

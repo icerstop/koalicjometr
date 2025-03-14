@@ -436,21 +436,52 @@ function calculateMandates() {
     updatePartyMap();
 }
 
+// Plugin rysujący etykiety nad słupkami
+const barDataLabelPlugin = {
+    id: 'barDataLabelPlugin',
+    afterDatasetsDraw(chart, args, options) {
+      const { ctx } = chart;
+      chart.data.datasets.forEach((dataset, datasetIndex) => {
+        const meta = chart.getDatasetMeta(datasetIndex);
+        meta.data.forEach((element, index) => {
+          const dataValue = dataset.data[index];
+          ctx.save();
+          ctx.fillStyle = options.color || 'black';
+          ctx.font = options.font || 'bold 12px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(dataValue.toFixed(2) + '%', element.x, element.y - 5);
+          ctx.restore();
+        });
+      });
+    }
+  };
+
+
 // Wykresy
 const donutChart = new Chart(document.getElementById('donut-chart'), {
     type: 'doughnut',
     data: { labels: [], datasets: [{ data: [], backgroundColor: [] }] },
-    options: { cutout: '50%', plugins: { legend: { position: 'bottom' } } }
+    options: { cutout: '50%', plugins: { legend: { position: 'bottom' }, datalabels: {display: false}, barDataLabelPlugin: false, tooltip:{enabled: false} } }
 });
 
 const barChart = new Chart(document.getElementById('bar-chart'), {
     type: 'bar',
     data: { labels: [], datasets: [{ data: [], backgroundColor: [] }] },
-    options: { scales: { y: { beginAtZero: true } }, plugins: {
-        legend: {
-            display: false
+    options: { 
+        scales: { y: { beginAtZero: true } },
+        plugins: {
+            plugins: [barDataLabelPlugin],
+            legend: { display: false },
+            barDataLabelPlugin: {
+                color: '#000',
+                font: 'bold 12px sans-serif'
+            },
+            tooltip:{
+                enabled: false
+            }
         }
-    } }
+    }
 });
 
 const constituencyChart = new Chart(document.getElementById('constituency-chart'), {
@@ -557,10 +588,13 @@ function updateDonutChart(mandates) {
 function updateBarChart(support) {
     const shortNames = { 'Trzecia Droga': 'TD', 'Lewica': 'NL', 'Prawo i Sprawiedliwość': 'PiS', 'Konfederacja': 'KONF', 'Koalicja Obywatelska': 'KO', 'Razem': 'RZ', 'Pozostałe': 'POZ'};
     const data = committees.map((c, i) => ({ support: support[i], name: shortNames[c.name], color: colors[c.id] }));
-    data.sort((a, b) => b.support - a.support);
-    barChart.data.labels = data.map(d => d.name);
-    barChart.data.datasets[0].data = data.map(d => d.support);
-    barChart.data.datasets[0].backgroundColor = data.map(d => d.color);
+    const dataOthers = data.filter(item => item.name !== 'POZ').sort((a, b) => b.support - a.support);
+    const dataPoz = data.filter(item => item.name === 'POZ');
+    // Połącz, żeby POZ były zawsze na końcu
+    const sortedData = [...dataOthers, ...dataPoz];
+    barChart.data.labels = sortedData.map(d => d.name);
+    barChart.data.datasets[0].data = sortedData.map(d => d.support);
+    barChart.data.datasets[0].backgroundColor = sortedData.map(d => d.color);
     const maxValue = Math.max(...support);
     barChart.options.scales.y.suggestedMax = maxValue * 1.03;
     barChart.update();
@@ -643,7 +677,8 @@ function updateCoalitions(mandates, support) {
             if (subsetIds.includes('pis') && subsetIds.includes('ko')) continue;
             if (subsetIds.includes('nl') && subsetIds.includes('konf')) continue;
             if (subsetIds.includes('nl') && subsetIds.includes('pis')) continue;
-            if (subsetIds.includes('rz') && subsetIds.includes('konf') && subsetIds.includes('pis')) continue;
+            if (subsetIds.includes('rz') && subsetIds.includes('konf')) continue;
+            if (subsetIds.includes('rz') && subsetIds.includes('pis')) continue;
             if (subsetIds.includes('poz')) continue;
             if (subset.some(i => mandates[i] === 0)) continue;
             const total = subset.reduce((sum, i) => sum + mandates[i], 0);
