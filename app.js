@@ -42,6 +42,9 @@ export async function loadConstituencies() {
     }
     calculator = new ElectionCalculator(committees, constituencies);
     populateConstituencyList(constituencies);
+    document.getElementById('constituency-list').addEventListener('change', () => {
+        updateConstituencyDetails(committees, constituencies, constituencyChart, SHORT_NAMES, colors);
+    });
     calculateMandates();
 }
 

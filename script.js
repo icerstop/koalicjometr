@@ -457,7 +457,9 @@ function populateConstituencyList() {
         list.add(option);
     });
     list.selectedIndex = 0;
-    list.addEventListener('change', updateConstituencyDetails);
+    list.addEventListener('change', () => {
+        updateConstituencyDetails(committees, constituencies, constituencyChart, SHORT_NAMES, colors);
+    });
 }
 
 function updateConstituencyDetails() {

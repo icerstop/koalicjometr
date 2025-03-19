@@ -127,7 +127,7 @@ export function populateConstituencyList(constituencies) {
         list.add(option);
     });
     list.selectedIndex = 0;
-    list.addEventListener('change', updateConstituencyDetails);
+    //list.addEventListener('change', updateConstituencyDetails);
 }
 
 export function updateConstituencyDetails(committees, constituencies, constituencyChart, SHORT_NAMES, colors) {
